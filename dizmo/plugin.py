@@ -24,7 +24,7 @@ class Dizmo:
             self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'AppData', 'Local', 'futureLAB', 'dizmode', 'InstalledWidgets')
             self._dizmo_deployment_path = self._dizmo_deployment_path.replace('\\', '\\\\')
         if sys.platform.startswith('darwin'):
-            self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'Library', 'Application\ Support', 'dizmode', 'InstalledWidgets')
+            self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'dizmode', 'InstalledWidgets')
 
     def skeleton_path(self):
         skeleton = resource_filename(__name__, 'skeleton')
