@@ -27,7 +27,10 @@ class Dizmo:
             self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'dizmode', 'InstalledWidgets')
 
     def skeleton_path(self):
-        skeleton = resource_filename(__name__, 'skeleton')
+        try:
+            skeleton = resource_filename(__name__, os.path.join('skeleton', 'default'))
+        except NotImplementedError:
+            skeleton = os.path.join(sys.prefix, 'skeleton', 'dizmo')
 
         return skeleton
 
