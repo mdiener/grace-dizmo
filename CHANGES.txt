@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.1.5
+-----
+
+* Changes so it can be run with py2exe
+* small change to not use resource_filename when frozen (not in a egg)
+
 0.1.3
 -----
 
