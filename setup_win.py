@@ -25,7 +25,7 @@ setup(
     version='0.1.6',
     license='LICENSE.txt',
     packages=['dizmo'],
-    install_requires=['grace', 'setuptools'],
+    install_requires=['grace'],
     data_files=data_files,
     console=['../grace/bin/grace'],
     keywords='toolchain javascript dizmo js buildtool',
@@ -33,8 +33,7 @@ setup(
     options={
         'py2exe': {
             'packages': ['dizmo'],
-            'bundle_files': True,
-            'includes': ['setuptools']
+            'bundle_files': True
         }
     }
 )

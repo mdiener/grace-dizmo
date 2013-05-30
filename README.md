@@ -4,7 +4,7 @@ grace-dizmo
 Install
 -------
 
-To install the grace_dizmo plugin, execute _pip install grace_dizmo --user_ all dependencies will be resolved (**Grace** and libsass).
+Installing grace-dizmo can be done the same way as **Grace** (https://github.com/mdiener/grace). You do not need to install **Grace** first, as it will be automatically installed as a dependency. You can also grab an executable from http://www.webdiener.ch/grace for Windows, which includes both **Grace** and the dizmo plugin already.
 
 General
 -------
