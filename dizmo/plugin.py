@@ -28,7 +28,7 @@ class Dizmo:
 
     def skeleton_path(self):
         try:
-            skeleton = resource_filename(__name__, os.path.join('skeleton', 'default'))
+            skeleton = resource_filename(__name__, os.path.join('skeleton', 'dizmo'))
         except NotImplementedError:
             skeleton = os.path.join(sys.prefix, 'skeleton', 'dizmo')
 
