@@ -5,12 +5,12 @@ import py2exe
 import os
 
 sys.path.append('C:\\Program Files (x86)\\Microsoft Visual Studio 11.0\\VC\\redist\\x86\\Microsoft.VC110.CRT')
-data_files=[
+data_files = [
     ('Microsoft.VC110.CRT', glob(r'C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\redist\x86\Microsoft.VC110.CRT\*.*'))
 ]
 
 previous = ''
-for root, dirs, files in os.walk(os.path.join('dizmo', 'skeleton')):
+for root, dirs, files in os.walk(os.path.join('grace-dizmo', 'skeleton')):
     for filename in files:
         if previous != root:
             data_files.append((root[6:], glob(root + '\*.*')))
@@ -22,9 +22,9 @@ setup(
     author='Michael Diener',
     author_email='dm.menthos@gmail.com',
     url='https://github.com/mdiener/grace-dizmo',
-    version='0.1.6',
+    version='0.1.7',
     license='LICENSE.txt',
-    packages=['dizmo'],
+    packages=['grace-dizmo'],
     install_requires=['grace'],
     data_files=data_files,
     console=['../grace/bin/grace'],
