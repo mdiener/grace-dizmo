@@ -1,16 +1,16 @@
 Class("#PROJECTNAME.Dizmo", {
     after: {
         initialize: function() {
-            var me = this;
+            var self = this;
 
             // Show front and hide back on first load
             jQuery("#back").hide();
             jQuery("#front").show();
 
-            me._setAttributes();
-            me._initEvents();
+            self.setAttributes();
+            self.initEvents();
 
-            me._restore();
+            self.restore();
         }
     },
 
@@ -18,7 +18,7 @@ Class("#PROJECTNAME.Dizmo", {
         /**
          * Initiate all the events for dizmo related stuff
          */
-        _initEvents: function() {
+        initEvents: function() {
             // Show back and front listeners
             dizmo.onShowBack(function() {
                 jQuery("#front").hide();
@@ -37,7 +37,7 @@ Class("#PROJECTNAME.Dizmo", {
                 }
 
                 dizmo.privateStorage().setProperty('height', val);
-                jQuery(events).trigger('dizmo.resize');
+                jQuery(events).trigger('dizmo.resize', [dizmo.getWidth(), dizmo.getHeight()]);
             });
 
             // Subscribe to width changes of the dizmo
@@ -47,17 +47,17 @@ Class("#PROJECTNAME.Dizmo", {
                 }
 
                 dizmo.privateStorage().setProperty('width', val);
-                jQuery(events).trigger('dizmo.resize');
+                jQuery(events).trigger('dizmo.resize', [dizmo.getHeigh(), dizmo.getWidth()]);
             });
 
             // Subscribe to displayMode changes
             viewer.subscribeToAttribute('displayMode', function(path, val, oldVal) {
                 if (val === 'presentation') {
                     dizmo.setAttribute('hideframe', true);
-                    jQuery(events).trigger('dizmo.display', [true]);
+                    jQuery(events).trigger('dizmo.displaymode', [true]);
                 } else {
                     dizmo.setAttribute('hideframe', false);
-                    jQuery(events).trigger('dizmo.display', [false]);
+                    jQuery(events).trigger('dizmo.displaymode', [false]);
                 }
             });
         },
@@ -66,7 +66,7 @@ Class("#PROJECTNAME.Dizmo", {
          * Restore the saved dizmo state (width, height)
          * @private
          */
-        _restore: function() {
+        restore: function() {
             if (dizmo.privateStorage().getProperty('width')) {
                 dizmo.setAttribute('geometry/width', parseInt(dizmo.privateStorage().getProperty('width')));
             }
@@ -80,7 +80,7 @@ Class("#PROJECTNAME.Dizmo", {
          * Set the dizmo default attributes like resize and docking
          * @private
          */
-        _setAttributes: function() {
+        setAttributes: function() {
             dizmo.setAttribute('allowResize', true);
             dizmo.canDock(function() {
                 return false;
@@ -101,6 +101,29 @@ Class("#PROJECTNAME.Dizmo", {
          */
         showFront: function() {
             dizmo.showFront();
+        },
+
+        load: function(path) {
+            var val = dizmo.privateStorage().getProperty(path);
+            var json;
+
+            if (jQuery.type(val) === 'string') {
+                try {
+                    json = jQuery.parseJSON(val);
+                } catch(e) {
+                    json = null;
+                }
+            } else {
+                json = null;
+            }
+
+            return json;
+        },
+
+        save: function(path, val) {
+            var json = JSON.stringify(val);
+
+            dizmo.privateStorage().setProperty(path, val);
         }
     }
 });
