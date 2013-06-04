@@ -10,7 +10,7 @@ for root, dirs, files in os.walk(os.path.join('grace-dizmo', 'skeleton')):
         if previous != root:
             filelist = glob(root + '/*.*')
             for f in filelist:
-                package_data['grace-dizmo'].append(f[6:])
+                package_data['grace-dizmo'].append(f[12:])
             previous = root
 
 setup(
