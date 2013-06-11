@@ -1,5 +1,9 @@
 Class("#PROJECTNAME.Dizmo", {
     after: {
+        /**
+         * Called after the internal initialize method
+         * @private
+         */
         initialize: function() {
             var self = this;
 
@@ -9,25 +13,28 @@ Class("#PROJECTNAME.Dizmo", {
 
             self.setAttributes();
             self.initEvents();
-
-            self.restore();
         }
     },
 
     methods: {
         /**
          * Initiate all the events for dizmo related stuff
+         * @private
          */
         initEvents: function() {
+            var self = this;
+
             // Show back and front listeners
             dizmo.onShowBack(function() {
                 jQuery("#front").hide();
                 jQuery("#back").show();
+                jQuery(events).trigger('dizmo.turned', ['back']);
             });
 
             dizmo.onShowFront(function() {
                 jQuery("#back").hide();
                 jQuery("#front").show();
+                jQuery(events).trigger('dizmo.turned', ['front']);
             });
 
             // Subscribe to height changes of the dizmo
@@ -36,8 +43,8 @@ Class("#PROJECTNAME.Dizmo", {
                     dizmo.setAttribute('geometry/height', 200);
                 }
 
-                dizmo.privateStorage().setProperty('height', val);
-                jQuery(events).trigger('dizmo.resize', [dizmo.getWidth(), dizmo.getHeight()]);
+                self.save('height', val);
+                jQuery(events).trigger('dizmo.resized', [dizmo.getWidth(), dizmo.getHeight()]);
             });
 
             // Subscribe to width changes of the dizmo
@@ -46,34 +53,42 @@ Class("#PROJECTNAME.Dizmo", {
                     dizmo.setAttribute('geometry/width', 200);
                 }
 
-                dizmo.privateStorage().setProperty('width', val);
-                jQuery(events).trigger('dizmo.resize', [dizmo.getHeigh(), dizmo.getWidth()]);
+                self.save('width', val);
+                jQuery(events).trigger('dizmo.resized', [dizmo.getWidth(), dizmo.getHeight()]);
             });
 
             // Subscribe to displayMode changes
             viewer.subscribeToAttribute('displayMode', function(path, val, oldVal) {
                 if (val === 'presentation') {
                     dizmo.setAttribute('hideframe', true);
-                    jQuery(events).trigger('dizmo.displaymode', [true]);
                 } else {
                     dizmo.setAttribute('hideframe', false);
-                    jQuery(events).trigger('dizmo.displaymode', [false]);
                 }
+
+                jQuery(events).trigger('dizmo.onmodechanged', [val]);
             });
-        },
 
-        /**
-         * Restore the saved dizmo state (width, height)
-         * @private
-         */
-        restore: function() {
-            if (dizmo.privateStorage().getProperty('width')) {
-                dizmo.setAttribute('geometry/width', parseInt(dizmo.privateStorage().getProperty('width')));
-            }
+            // Register on the canDock event and return a default of false.
+            // False => No docking will occur
+            // True => Docking might occur (if the other dizmo allows it)
+            dizmo.canDock(function(dockingDizmo) {
+                return false;
+            });
 
-            if (dizmo.privateStorage().getProperty('height')) {
-                dizmo.setAttribute('geometry/height', parseInt(dizmo.privateStorage().getProperty('height')));
-            }
+            // onDock and onUndock will not do anything as of now, since the canDock returns false,
+            // meaning the dizmo can never be docked.
+            dizmo.onDock(function(dockedDizmo) {
+                // Write code here that should happen when a dizmo has been docked.
+                // The line below is a small example on how to relay the event to other
+                // classes.
+                jQuery(events).trigger('dizmo.docked');
+            });
+            dizmo.onUndock(function(undockedDizmo) {
+                // Write code here that should happen when a dizmo has been un-docked.
+                // The line below is a small example on how to relay the event to other
+                // classes.
+                jQuery(events).trigger('dizmo.undocked');
+            });
         },
 
         /**
@@ -81,10 +96,21 @@ Class("#PROJECTNAME.Dizmo", {
          * @private
          */
         setAttributes: function() {
+            var self = this;
+
+            // Allow the resizing of the dizmo
             dizmo.setAttribute('allowResize', true);
-            dizmo.canDock(function() {
-                return false;
-            });
+
+            // Set the size and width of the dizmo to the values it had before reloading (or closing
+            // of dizmos)
+            var width = self.load('width');
+            var height = self.load('height');
+            if (jQuery.type(width) === 'number') {
+                dizmo.setAttribute('geometry/width', width);
+            }
+            if (jQuery.type(height) === 'number') {
+                dizmo.setAttribute('geometry/height', height);
+            }
         },
 
         /**
@@ -103,6 +129,14 @@ Class("#PROJECTNAME.Dizmo", {
             dizmo.showFront();
         },
 
+        /**
+         * Load the value saved at the given path. If no value is saved
+         * in this path, return null. The value will be parsed through JSON as
+         * this functions assumes it's saved in JSON format (see load)
+         * @param  {String} path The path to look for a value
+         * @return {mixed}       Either the value as a JavaScript type or null
+         * @public
+         */
         load: function(path) {
             var val = dizmo.privateStorage().getProperty(path);
             var json;
@@ -120,10 +154,18 @@ Class("#PROJECTNAME.Dizmo", {
             return json;
         },
 
-        save: function(path, val) {
-            var json = JSON.stringify(val);
+        /**
+         * Saves a value in the given path. The value is, regardless of its type,
+         * first converted into a JSON string and then saved at the given
+         * path.
+         * @param {String} path  The path to save the value to
+         * @param {Mixed}  value The value to save (can be any JavaScript type)
+         * @public
+         */
+        save: function(path, value) {
+            var json = JSON.stringify(value);
 
-            dizmo.privateStorage().setProperty(path, val);
+            dizmo.privateStorage().setProperty(path, value);
         }
     }
 });
