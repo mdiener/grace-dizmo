@@ -3,15 +3,15 @@
 Class("#PROJECTNAME.Main", {
     has: {
         dizmo: {
-            is: 'r',
+            is: 'ro',
             init: function() {
                 return new #PROJECTNAME.Dizmo();
             }
         }
-    }
+    },
 
     after: {
-        initialize: function(dizmo) {
+        initialize: function() {
             var self = this;
 
             self.initEvents();
