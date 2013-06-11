@@ -48,6 +48,7 @@ All the functions, etc. are written as being called inside Main (from the file M
 
 ```javascript
 self.getDizmo().save(path, value);
+```
 
 Saves the provided value in the provided path. This will make it persistent: On a reload of the dizmo, the value will still be at the same place (at the saved path).
 
