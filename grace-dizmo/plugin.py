@@ -179,11 +179,11 @@ class Dizmo:
 
     def _move_zip(self, name):
         try:
-            source = os.path.join(self._config['zip_path'], name + '.zip')
-            dest = os.path.join(self._config['zip_path'], name + '.dzm')
+            source = os.path.join(self._config['zip_path'], name + '_v' + self._config['version'] + '.zip')
+            dest = os.path.join(self._config['zip_path'], name + '_v' + self._config['version'] + '.dzm')
         except:
-            source = os.path.join(os.getcwd(), 'build', name + '.zip')
-            dest = os.path.join(os.getcwd(), 'build', name + '.dzm')
+            source = os.path.join(os.getcwd(), 'build', name + '_v' + self._config['version'] + '.zip')
+            dest = os.path.join(os.getcwd(), 'build', name + '_v' + self._config['version'] + '.dzm')
 
         if os.path.exists(dest):
             try:
