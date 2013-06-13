@@ -163,9 +163,45 @@ Class("#PROJECTNAME.Dizmo", {
          * @public
          */
         save: function(path, value) {
-            var json = JSON.stringify(value);
+            var jsonString = JSON.stringify(value);
 
-            dizmo.privateStorage().setProperty(path, value);
+            dizmo.privateStorage().setProperty(path, jsonString);
+        },
+
+        /**
+         * Publish the path with the chosen value. If no path is specified, meaning if
+         * the function is called with only val, it will use the standard publish path
+         * 'stdout'.
+         * @param  {String} path The path to publish to
+         * @param  {Mixed}  val  The value to set the publish path to
+         * @public
+         */
+        publish: function(path, val) {
+            if (jQuery.type(path) === 'undefined') {
+                return;
+            }
+
+            if (jQuery.type(val) === 'undefined') {
+                val = path;
+                path = 'stdout';
+            }
+
+            var jsonString = JSON.stringify(val);
+            dizmo.publicStorage().setProperty(path, jsonString);
+        },
+
+        /**
+         * Delete the published path. If no path is specified, it will delete the standard
+         * path 'stdout'.
+         * @param  {String} path Path to remove from publishing
+         * @public
+         */
+        unpublish: function(path) {
+            if (jQuery.type(path) === 'undefined') {
+                path = 'stdout';
+            }
+
+            dizmo.publicStorage().deleteProperty(path);
         }
     }
 });
