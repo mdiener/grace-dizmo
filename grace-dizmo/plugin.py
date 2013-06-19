@@ -77,6 +77,9 @@ class Dizmo:
         if 'main_html' not in self._dizmo_config:
             raise MissingKeyError('Specify a main html in your config file under `dizmo_settings`.')
 
+        if 'hidden_widget' not in self._dizmo_config:
+            self._dizmo_config['hidden_widget'] = False
+
     def _get_plist(self, test=False):
         if test:
             display_name = self._dizmo_config['display_name'] + ' Test'
@@ -97,7 +100,8 @@ class Dizmo:
             MainHTML=self._dizmo_config['main_html'],
             Width=self._dizmo_config['width'],
             Height=self._dizmo_config['height'],
-            KastellanAPIVersion=self._dizmo_config['api_version']
+            KastellanAPIVersion=self._dizmo_config['api_version'],
+            hiddenWidget=self._dizmo_config['hidden_widget']
         )
 
     def after_build(self):
