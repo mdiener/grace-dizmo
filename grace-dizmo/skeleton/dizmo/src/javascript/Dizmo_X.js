@@ -1,4 +1,130 @@
+/**
+ * @class The custom wrapper around the provided dizmo API
+ *
+ * @description
+ * This class serves as a basis for a custom wrapper around the dizmo API. It should be extended by the developer and can be used as a reference as to how an interaction with the API could work out. Some basic events are already programmed and can be used.
+ */
 Class("#PROJECTNAME.Dizmo", {
+    my: {
+        methods: {
+            /**
+             * Shows the back of the dizmo
+             * @static
+             */
+            showBack: function() {
+                dizmo.showBack();
+            },
+
+            /**
+             * Shows the front of the dizmo
+             * @static
+             */
+            showFront: function() {
+                dizmo.showFront();
+            },
+
+            /**
+             * Load the value saved at the given path. If no value is saved
+             * in this path, return null. The value will be parsed through JSON as
+             * this functions assumes it's saved in JSON format (see load)
+             * @param  {String} path The path to look for a value
+             * @return {mixed}       Either the value as a JavaScript type or null
+             * @static
+             */
+            load: function(path) {
+                var val = dizmo.privateStorage().getProperty(path);
+                var json;
+
+                if (jQuery.type(val) === 'string') {
+                    try {
+                        json = jQuery.parseJSON(val);
+                    } catch(e) {
+                        json = null;
+                    }
+                } else {
+                    json = null;
+                }
+
+                return json;
+            },
+
+            /**
+             * Saves a value in the given path. The value is, regardless of its type,
+             * first converted into a JSON string and then saved at the given
+             * path.
+             * @param {String} path  The path to save the value to
+             * @param {Mixed}  value The value to save (can be any JavaScript type)
+             * @static
+             */
+            save: function(path, value) {
+                var jsonString = JSON.stringify(value);
+
+                dizmo.privateStorage().setProperty(path, jsonString);
+            },
+
+            /**
+             * Publish the path with the chosen value. If no path is specified, meaning if
+             * the function is called with only val, it will use the standard publish path
+             * 'stdout'.
+             * @param  {String} path The path to publish to
+             * @param  {Mixed}  val  The value to set the publish path to
+             * @static
+             */
+            publish: function(path, val) {
+                if (jQuery.type(path) === 'undefined') {
+                    return;
+                }
+
+                if (jQuery.type(val) === 'undefined') {
+                    val = path;
+                    path = 'stdout';
+                }
+
+                var jsonString = JSON.stringify(val);
+                dizmo.publicStorage().setProperty(path, jsonString);
+            },
+
+            /**
+             * Delete the published path. If no path is specified, it will delete the standard
+             * path 'stdout'.
+             * @param  {String} path Path to remove from publishing
+             * @static
+             */
+            unpublish: function(path) {
+                if (jQuery.type(path) === 'undefined') {
+                    path = 'stdout';
+                }
+
+                dizmo.publicStorage().deleteProperty(path);
+            },
+
+            /**
+             * @return {Object} The size of the dizmo as width and height
+             * @static
+             */
+            getSize: function() {
+                return dizmo.getSize();
+            },
+
+            /**
+             * Set the size of the dizmo
+             * @param {Number} width  The width of the dizmo
+             * @param {Number} height The height of the dizmo
+             * @static
+             */
+            setSize: function(width, height) {
+                if (jQuery.type(width) !== 'number') {
+                    throw 'Please provide only numbers for width!'
+                }
+                if (jQuery.type(height) !== 'number') {
+                    throw 'Please provide only numbers for height!'
+                }
+
+                dizmo.setSize(width, height);
+            }
+        }
+    },
+
     after: {
         /**
          * Called after the internal initialize method
@@ -43,7 +169,7 @@ Class("#PROJECTNAME.Dizmo", {
                     dizmo.setAttribute('geometry/height', 200);
                 }
 
-                self.save('height', val);
+                self.my.save('height', val);
                 jQuery(events).trigger('dizmo.resized', [dizmo.getWidth(), dizmo.getHeight()]);
             });
 
@@ -53,7 +179,7 @@ Class("#PROJECTNAME.Dizmo", {
                     dizmo.setAttribute('geometry/width', 200);
                 }
 
-                self.save('width', val);
+                self.my.save('width', val);
                 jQuery(events).trigger('dizmo.resized', [dizmo.getWidth(), dizmo.getHeight()]);
             });
 
@@ -103,105 +229,14 @@ Class("#PROJECTNAME.Dizmo", {
 
             // Set the size and width of the dizmo to the values it had before reloading (or closing
             // of dizmos)
-            var width = self.load('width');
-            var height = self.load('height');
+            var width = self.my.load('width');
+            var height = self.my.load('height');
             if (jQuery.type(width) === 'number') {
                 dizmo.setAttribute('geometry/width', width);
             }
             if (jQuery.type(height) === 'number') {
                 dizmo.setAttribute('geometry/height', height);
             }
-        },
-
-        /**
-         * Shows the back of the dizmo
-         * @public
-         */
-        showBack: function() {
-            dizmo.showBack();
-        },
-
-        /**
-         * Shows the front of the dizmo
-         * @public
-         */
-        showFront: function() {
-            dizmo.showFront();
-        },
-
-        /**
-         * Load the value saved at the given path. If no value is saved
-         * in this path, return null. The value will be parsed through JSON as
-         * this functions assumes it's saved in JSON format (see load)
-         * @param  {String} path The path to look for a value
-         * @return {mixed}       Either the value as a JavaScript type or null
-         * @public
-         */
-        load: function(path) {
-            var val = dizmo.privateStorage().getProperty(path);
-            var json;
-
-            if (jQuery.type(val) === 'string') {
-                try {
-                    json = jQuery.parseJSON(val);
-                } catch(e) {
-                    json = null;
-                }
-            } else {
-                json = null;
-            }
-
-            return json;
-        },
-
-        /**
-         * Saves a value in the given path. The value is, regardless of its type,
-         * first converted into a JSON string and then saved at the given
-         * path.
-         * @param {String} path  The path to save the value to
-         * @param {Mixed}  value The value to save (can be any JavaScript type)
-         * @public
-         */
-        save: function(path, value) {
-            var jsonString = JSON.stringify(value);
-
-            dizmo.privateStorage().setProperty(path, jsonString);
-        },
-
-        /**
-         * Publish the path with the chosen value. If no path is specified, meaning if
-         * the function is called with only val, it will use the standard publish path
-         * 'stdout'.
-         * @param  {String} path The path to publish to
-         * @param  {Mixed}  val  The value to set the publish path to
-         * @public
-         */
-        publish: function(path, val) {
-            if (jQuery.type(path) === 'undefined') {
-                return;
-            }
-
-            if (jQuery.type(val) === 'undefined') {
-                val = path;
-                path = 'stdout';
-            }
-
-            var jsonString = JSON.stringify(val);
-            dizmo.publicStorage().setProperty(path, jsonString);
-        },
-
-        /**
-         * Delete the published path. If no path is specified, it will delete the standard
-         * path 'stdout'.
-         * @param  {String} path Path to remove from publishing
-         * @public
-         */
-        unpublish: function(path) {
-            if (jQuery.type(path) === 'undefined') {
-                path = 'stdout';
-            }
-
-            dizmo.publicStorage().deleteProperty(path);
         }
     }
 });
