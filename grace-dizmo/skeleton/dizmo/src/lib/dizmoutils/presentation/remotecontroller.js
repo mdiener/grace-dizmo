@@ -114,7 +114,7 @@ Class("Dizmo.Presentation.RemoteController", {
                     self.step = 0;
                 }
 
-                self.step = val;
+                self.step = step;
             });
 
             pubStore.subscribeTo('presentation/animationRunning', function(path, val, oldVal) {
