@@ -1,0 +1,117 @@
+@CHARSET "UTF-8";
+.sbHolder{
+	background-color: rgba(60, 60, 60, 1);
+	border: solid 1px rgb(237, 237, 237);
+	border-radius: 10px;
+	font-family: "Pharma-Bold", sans-serif;
+	font-size: 16px;
+	font-weight: normal;
+	height: 50px;
+	position: relative;
+	width: 100%;
+	text-align: left;
+}
+.sbHolderOpen {
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+
+.sbSelector{
+	display: block;
+	left: 0;
+	line-height: 50px;
+	outline: none;
+	overflow: hidden;
+	position: absolute;
+	text-indent: 15px;
+	top: 0;
+	width: 100%;
+}
+.sbSelector:link, .sbSelector:visited, .sbSelector:hover{
+	color: rgb(237, 237, 237);
+	outline: none;
+	text-decoration: none;
+}
+.sbToggle{
+	background: url('arrow_down.svg') 0 0 no-repeat;
+	display: block;
+	height: 15px;
+	width: 15px;
+	outline: none;
+	position: absolute;
+	right: 15px;
+	top: 22px;
+}
+.sbToggleOpen{
+	background: url('arrow_up.svg') 0 0 no-repeat;
+}
+.sbHolderDisabled{
+	background-color: #3C3C3C;
+	border: solid 1px #515151;
+}
+.sbHolderDisabled .sbHolder{
+
+}
+.sbHolderDisabled .sbToggle{
+
+}
+.sbOptions{
+	background-color: rgba(60, 60, 60, 1);
+	border-bottom: solid 1px rgb(237, 237, 237);
+	border-left: solid 1px rgb(237, 237, 237);
+	border-right: solid 1px rgb(237, 237, 237);
+	border-bottom-right-radius: 10px;
+	border-bottom-left-radius: 10px;
+	list-style: none;
+	left: -1px;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 30px;
+	width: 100%;
+	z-index: 1;
+	overflow-y: auto;
+}
+.sbHolder ul.sbOptions li{
+	padding: 10px 15px;
+	margin: 0px !important;
+	text-align: left !important;
+	font-weight: normal;
+}
+.sbOptions a{
+	display: block;
+	outline: none;
+}
+.sbOptions a:link, .sbOptions a:visited{
+	color: rgb(237, 237, 237);
+	text-decoration: none;
+}
+.sbOptions a.sbFocus {
+	color: rgb(237, 237, 237);
+}
+.sbOptions a:hover,
+.sbOptions a:focus {
+	color: rgb(60, 60, 60);
+}
+.sbOptions li.last a{
+	border-bottom: none;
+}
+
+.sbOptions li:hover {
+	background-color: rgba(237, 237, 237, 1);
+}
+.sbOptions .sbDisabled{
+	border-bottom: dotted 1px #515151;
+	color: #999;
+	display: block;
+	padding: 7px 0 7px 3px;
+}
+.sbOptions .sbGroup{
+	border-bottom: dotted 1px #515151;
+	color: #EBB52D;
+	display: block;
+	padding: 7px 0 7px 3px;
+}
+.sbOptions .sbSub{
+	padding-left: 17px;
+}
