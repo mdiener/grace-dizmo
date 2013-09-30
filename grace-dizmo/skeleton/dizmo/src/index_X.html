@@ -2,14 +2,37 @@
 <html>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>#PROJECTNAME</title>
-    <link rel="stylesheet" type="text/css" href="style/style.css">
-    <script type="text/javascript" src="lib/joose/joose.min.js"></script>
+    <!-- jQuery libraries -->
+    <link rel="stylesheet" type="text/css" href="lib/jquery-ui/css/ui-lightness/jquery-ui-1.10.3.custom.min.css" />
     <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-ui/jquery-ui-1.10.3.custom.min.js"></script>
+    <!-- End of jQuery libraries -->
+
+    <!-- Joose JavaScript Class framework -->
+    <script type="text/javascript" src="lib/joose/joose.min.js"></script>
+    <!-- End of Joose framework -->
+
+    <!-- Utility classes for dizmos -->
     <script type="text/javascript" src="lib/dizmoutils/utils.js"></script>
     <!-- Comment the following line in if you want your dizmo to be able to be controlled by the Navigator or other dizmos. Refer to the class documentation for more information.-->
     <!--<script type="text/javascript" src="lib/dizmoutils/presentation/controller.js"></script>-->
     <!-- Comment the following line in if you want to be able to control other dizmos (as the Navigator does)-->
     <!--<script type="text/javascript" src="lib/dizmoutils/presentation/remotecontroller.js"></script>-->
+    <!-- End of utility classes -->
+
+    <!-- Dizmo styling -->
+    <link rel="stylesheet" type="text/css" href="lib/dizmoutils/elements/checkbox/dizmo_checkbox.css">
+    <link rel="stylesheet" type="text/css" href="lib/dizmoutils/elements/slider/dizmo_slider.css">
+    <link rel="stylesheet" type="text/css" href="lib/dizmoutils/elements/selectbox/dizmo_selectbox.css">
+    <link rel="stylesheet" type="text/css" href="lib/dizmoutils/elements/switch/dizmo_switch.css">
+    <script type="text/javascript" src="lib/dizmoutils/elements/checkbox/dizmo_checkbox.js"></script>
+    <script type="text/javascript" src="lib/dizmoutils/elements/slider/dizmo_slider.js"></script>
+    <script type="text/javascript" src="lib/dizmoutils/elements/selectbox/dizmo_selectbox.js"></script>
+    <script type="text/javascript" src="lib/dizmoutils/elements/switch/dizmo_switch.js"></script>
+    <!-- End of dizmo styling -->
+
+    <!-- Dizmo Stylesheet (Do not remove!)-->
+    <link rel="stylesheet" type="text/css" href="style/style.css">
 </head>
 <body>
     <div id="front">
@@ -23,6 +46,7 @@
         </div>
     </div>
 
+    <!-- Your own JavaScript (Do not remove!) -->
     <script type="text/javascript" src="application.js"></script>
 </body>
 </html>
