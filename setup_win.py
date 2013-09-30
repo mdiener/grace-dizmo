@@ -22,7 +22,7 @@ setup(
     author='Michael Diener',
     author_email='dm.menthos@gmail.com',
     url='https://github.com/mdiener/grace-dizmo',
-    version='0.1.16',
+    version='0.1.18',
     license='LICENSE.txt',
     packages=['grace-dizmo'],
     install_requires=['grace'],
@@ -32,7 +32,7 @@ setup(
     long_description=open('README.txt').read(),
     options={
         'py2exe': {
-            'packages': ['dizmo'],
+            'packages': ['grace-dizmo'],
             'bundle_files': True
         }
     }
