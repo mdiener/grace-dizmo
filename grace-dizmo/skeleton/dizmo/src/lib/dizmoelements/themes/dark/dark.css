@@ -1,0 +1,101 @@
+/********************/
+/* Start Button CSS */
+button.dizmo-button-dark {
+    border: 1px solid rgb(237, 237, 237);
+    background-color: rgba(60, 60, 60, 1);
+    color: rgb(237, 237, 237);
+}
+
+button.dizmo-button-dark:active {
+    border: 1px solid rgb(237, 237, 237);
+    background-color: rgba(60, 60, 60, 1);
+    color: rgb(237, 237, 237);
+}
+/* End Button CSS */
+/******************/
+
+/**********************/
+/* Start checkbox CSS */
+.dizmo-checkbox-dark .dizmo-checkbox-input:checked + .dizmo-checkbox-label span.dizmo-checkbox-label-image {
+    background: url('images/checkbox/unchecked.svg') left top no-repeat;
+}
+
+.dizmo-checkbox-dark .dizmo-checkbox-label span.dizmo-checkbox-label-image {
+    background: url('images/checkbox/checked.svg') left top no-repeat;
+}
+
+.dizmo-checkbox-dark .dizmo-checkbox-label {
+    color: rgb(60, 60, 60);
+}
+/* End Checkbox CSS */
+/********************/
+
+/******************************/
+/* Start Custom Selectbox CSS */
+.dizmo-selectbox-dark {
+    background-color: rgba(60, 60, 60, 1);
+    border: 1px solid rgb(237, 237, 237);
+}
+
+.dizmo-selectbox-dark span.dizmo-selectbox-text {
+    color: rgb(237, 237, 237);
+}
+
+.dizmo-selectbox-dark span.dizmo-selectbox-image {
+    background: url('images/selectbox/arrow_down.svg') 0 0 no-repeat;
+}
+
+.dizmo-selectbox-dark ul.dizmo-selectbox-list {
+    background-color: rgba(60, 60, 60, 1);
+    border: 1px solid rgb(237, 237, 237);
+}
+
+.dizmo-selectbox-dark ul.dizmo-selectbox-list li.dizmo-selectbox-list-entry {
+    color: rgb(237, 237, 237);
+}
+
+.dizmo-selectbox-dark ul.dizmo-selectbox-list li.dizmo-selectbox-list-entry:hover {
+    color: rgb(60, 60, 60);
+    background-color: rgba(237, 237, 237, 1);
+}
+/* End Selectbox CSS*/
+/********************/
+
+/********************/
+/* Start Slider CSS */
+.dizmo-slider-dark {
+    border: 1px solid rgb(60, 60, 60);
+}
+
+.dizmo-slider-dark .dizmo-slider-inner {
+    background-color: rgba(60, 60, 60, 1);
+}
+
+.dizmo-slider-dark .dizmo-slider-inner a.ui-slider-handle {
+    background: url('images/slider/handle.svg') no-repeat;
+}
+
+/* End Slider CSS */
+/******************/
+
+/********************/
+/* Start Switch CSS */
+button.dizmo-switch-dark {
+    background-color: rgba(60, 60, 60, 1);
+    border: 1px solid rgb(237, 237, 237);
+}
+
+button.dizmo-switch-dark span.dizmo-switch-box {
+    color: rgb(60, 60, 60);
+    border: 1px solid rgb(237, 237, 237);
+}
+
+button.dizmo-switch-dark span.dizmo-switch-on-box {
+    border-left: 1px solid rgb(237, 237, 237);
+}
+
+button.dizmo-switch-dark span.dizmo-switch-off-box {
+    border-right: 1px solid rgb(237, 237, 237);
+}
+/* End Switch CSS */
+/******************/

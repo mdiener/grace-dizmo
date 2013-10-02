@@ -9,7 +9,7 @@ jQuery.widget('dizmo.dbutton', {
     },
 
     _create: function() {
-        if (this.element.attr('type') !== 'button') {
+        if (!this.element.is('button')) {
             console.log('Only works on button elements!');
             return null;
         }
@@ -21,7 +21,26 @@ jQuery.widget('dizmo.dbutton', {
         }
 
         this.element.addClass('dizmo-button');
-    }
+        this._changeTheme(this.options.theme);
+    },
+
+    theme: function(theme) {
+        if (jQuery.type(theme) === 'undefined') {
+            return this.options.theme;
+        }
+
+        if (jQuery.type(theme) !== 'string') {
+            return;
+        }
+
+        this._changeTheme(theme);
+    },
+
+    _changeTheme: function(theme) {
+        this.element.removeClass('dizmo-button-' + theme);
+        this.options.theme = theme;
+        this.element.addClass('dizmo-button-' + theme);
+    },
 });
 
 /**
@@ -33,6 +52,10 @@ jQuery.widget('dizmo.dbutton', {
  * jQuery('#myInputElement').dcheckbox();
  */
 jQuery.widget('dizmo.dcheckbox', {
+    options: {
+        theme: 'light'
+    },
+
     _create: function() {
         if (this.element.attr('type') !== 'checkbox') {
             console.log('Only works on checkbox elements!');
@@ -49,6 +72,10 @@ jQuery.widget('dizmo.dcheckbox', {
         }
 
         this.element.addClass('dizmo-checkbox-input');
+        this._wrapper = jQuery('<div />', {
+            'class': 'dizmo-checkbox'
+        }).insertBefore(this.element);
+        this.element.appendTo(this._wrapper);
 
         var label = jQuery('label[for="' + this.element.attr('id') + '"]');
         if (label.length > 0) {
@@ -71,8 +98,26 @@ jQuery.widget('dizmo.dcheckbox', {
             'class': 'dizmo-checkbox-label-image'
         }).prependTo(label);
 
-        this.element.removeAttr('data-type');
-    }
+        this._changeTheme(this.options.theme);
+    },
+
+    theme: function(theme) {
+        if (jQuery.type(theme) === 'undefined') {
+            return this.options.theme;
+        }
+
+        if (jQuery.type(theme) !== 'string') {
+            return;
+        }
+
+        this._changeTheme(theme);
+    },
+
+    _changeTheme: function(theme) {
+        this._wrapper.removeClass('dizmo-checkbox-' + theme);
+        this.options.theme = theme;
+        this._wrapper.addClass('dizmo-checkbox-' + theme);
+    },
 });
 
 /**
@@ -88,6 +133,10 @@ jQuery.widget('dizmo.dcheckbox', {
  * jQuery('.my-select-element').dselectbox('update');
  */
 jQuery.widget('dizmo.dselectbox', {
+    options: {
+        theme: 'light'
+    },
+
     _create: function() {
         var self = this;
 
@@ -97,6 +146,8 @@ jQuery.widget('dizmo.dselectbox', {
 
         self._buildElement();
         self._initEvents();
+
+        self._changeTheme(this.options.theme);
     },
 
     _buildElement: function() {
@@ -197,7 +248,7 @@ jQuery.widget('dizmo.dselectbox', {
         var options = self.element.children('option');
         var noVal = true;
         options.each(function(i, el) {
-            if (val === el.attr('value')) {
+            if (val === jQuery(el).attr('value')) {
                 noVal = false;
             }
         });
@@ -233,6 +284,24 @@ jQuery.widget('dizmo.dselectbox', {
 
         self._wrapper().remove();
         self._buildElement();
+    },
+
+    theme: function(theme) {
+        if (jQuery.type(theme) === 'undefined') {
+            return this.options.theme;
+        }
+
+        if (jQuery.type(theme) !== 'string') {
+            return;
+        }
+
+        this._changeTheme(theme);
+    },
+
+    _changeTheme: function(theme) {
+        this._wrapper.removeClass('dizmo-selectbox-' + theme);
+        this.options.theme = theme;
+        this._wrapper.addClass('dizmo-selectbox-' + theme);
     }
 });
 
@@ -246,12 +315,39 @@ jQuery.widget('dizmo.dselectbox', {
  * dizmoscroll library.
  */
 jQuery.widget('dizmo.dslider', jQuery.ui.slider, {
+    options: {
+        theme: 'light'
+    },
+
     _create: function() {
         jQuery.ui.slider.prototype._create.call(this);
 
-        this.element.wrap('<div class="dizmo-slider-parent orientation-' + this.options.orientation + '"></div>');
-        this.element.addClass('dizmo-slider');
-    }
+        this._wrapper = jQuery('<div />', {
+            'class': 'dizmo-slider orientation-' + this.options.orientation
+        }).insertBefore(this.element);
+        this.element.appendTo(this._wrapper);
+        this.element.addClass('dizmo-slider-inner');
+
+        this._changeTheme(this.options.theme);
+    },
+
+    theme: function(theme) {
+        if (jQuery.type(theme) === 'undefined') {
+            return this.options.theme;
+        }
+
+        if (jQuery.type(theme) !== 'string') {
+            return;
+        }
+
+        this._changeTheme(theme);
+    },
+
+    _changeTheme: function(theme) {
+        this._wrapper.removeClass('dizmo-slider-' + theme);
+        this.options.theme = theme;
+        this._wrapper.addClass('dizmo-slider-' + theme);
+    },
 });
 
 /**
@@ -384,19 +480,9 @@ jQuery.widget('dizmo.dswitch', {
     },
 
     _changeTheme: function(theme) {
-        if (theme === 'light') {
-            this.options.theme = 'light'
-            this.element.addClass('dizmo-switch-light');
-            this.element.removeClass('dizmo-switch-dark');
-            return;
-        }
-
-        if (theme === 'dark') {
-            this.options.theme = 'dark'
-            this.element.addClass('dizmo-switch-dark');
-            this.element.removeClass('dizmo-switch-light');
-            return;
-        }
+        this.element.removeClass('dizmo-switch-' + theme);
+        this.options.theme = theme;
+        this.element.addClass('dizmo-switch-' + theme);
     },
 
     _switchOn: function() {
@@ -433,28 +519,105 @@ jQuery.widget('dizmo.dswitch', {
 });
 
 jQuery(document).ready(function() {
+    var getTheme = function(el) {
+        var theme = el.attr('data-theme');
+
+        if (jQuery.type(theme) === 'undefined') {
+            return null;
+        } else {
+            return theme;
+        }
+    }
+
     var elements = jQuery('input[data-type="dizmo-checkbox"]');
-    elements.dcheckbox();
-    elements.removeAttr('data-type');
+    elements.each(function(index, el) {
+        var el = jQuery(el);
+        var theme = getTheme(el);
+
+        if (theme === 'dark' || theme === 'light') {
+            el.dcheckbox({
+                theme: theme
+            });
+        } else {
+            el.dcheckbox();
+        }
+
+        el.removeAttr('data-type');
+        el.removeAttr('data-theme');
+    });
 
     elements = jQuery('select[data-type="dizmo-selectbox"]');
-    elements.dselectbox();
-    elements.removeAttr('data-type');
+    elements.each(function(index, el) {
+        var el = jQuery(el);
+        var theme = getTheme(el);
+
+        if (theme === 'dark' || theme === 'light') {
+            el.dselectbox({
+                theme: theme
+            });
+        } else {
+            el.dselectbox();
+        }
+
+        el.removeAttr('data-type');
+        el.removeAttr('data-theme');
+    });
 
     elements = jQuery('div[data-type="dizmo-slider"]');
     elements.each(function(index, el) {
-        var or = jQuery(el).attr('data-orientation');
-        jQuery(el).dslider({
-            orientation: or
-        });
+        var el = jQuery(el);
+        var theme = getTheme(el);
+        var or = el.attr('data-orientation');
+        if (jQuery.type(or) === 'undefined') {
+            or = 'horizontal';
+        }
+
+        if (theme === 'dark' || theme === 'light') {
+            el.dslider({
+                theme: theme,
+                orientation: or
+            });
+        } else {
+            el.dslider({
+                orientation: or
+            });
+        }
+
+        el.removeAttr('data-type');
+        el.removeAttr('data-theme');
     });
-    elements.removeAttr('data-type');
 
     var elements = jQuery('button[data-type="dizmo-switch"]');
-    elements.dswitch();
-    elements.removeAttr('data-type');
+    elements.each(function(index, el) {
+        var el = jQuery(el);
+        var theme = getTheme(el);
+
+        if (theme === 'dark' || theme === 'light') {
+            el.dswitch({
+                theme: theme
+            });
+        } else {
+            el.dswitch();
+        }
+
+        el.removeAttr('data-type');
+        el.removeAttr('data-theme');
+    });
 
     var elements = jQuery('button[data-type="dizmo-button"]');
-    elements.dbutton();
-    elements.removeAttr('data-type');
+    elements.each(function(index, el) {
+        var el = jQuery(el);
+        var theme = getTheme(el);
+
+        if (theme === 'dark' || theme === 'light') {
+            el.dbutton({
+                theme: theme
+            });
+        } else {
+            el.dbutton();
+        }
+
+        el.removeAttr('data-type');
+        el.removeAttr('data-theme');
+    });
 });

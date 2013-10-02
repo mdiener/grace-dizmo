@@ -1,3 +1,6 @@
+@import url("themes/light/light.css");
+@import url("themes/dark/dark.css");
+
 /********************/
 /* Start Button CSS */
 button.dizmo-button {
@@ -14,61 +17,31 @@ button.dizmo-button {
     padding: 0px;
     border-radius: 10px;
 }
-
-button.dizmo-button-light {
-    border: 1px solid rgb(60, 60, 60);
-    background-color: rgba(237, 237, 237, 1);
-    color: rgb(60, 60, 60);
-}
-
-button.dizmo-button-light:active {
-    border: 1px solid rgb(237, 237, 237);
-    background-color: rgba(60, 60, 60, 1);
-    color: rgb(237, 237, 237);
-}
-
-button.dizmo-button-dark {
-    border: 1px solid rgb(237, 237, 237);
-    background-color: rgba(60, 60, 60, 1);
-    color: rgb(237, 237, 237);
-}
-
-button.dizmo-button-dark:active {
-    border: 1px solid rgb(237, 237, 237);
-    background-color: rgba(60, 60, 60, 1);
-    color: rgb(237, 237, 237);
-}
 /* End Button CSS */
 /******************/
 
 /**********************/
 /* Start checkbox CSS */
-.dizmo-checkbox-input {
+.dizmo-checkbox .dizmo-checkbox-input {
     display: none;
 }
 
-.dizmo-checkbox-input:checked + .dizmo-checkbox-label span.dizmo-checkbox-label-image {
-    background: url('images/checkbox/unchecked.svg') left top no-repeat;
-}
-
-.dizmo-checkbox-label span.dizmo-checkbox-label-image {
+.dizmo-checkbox .dizmo-checkbox-label span.dizmo-checkbox-label-image {
     margin-right: 10px;
     width: 25px;
     height: 25px;
-    background: url('images/checkbox/checked.svg') left top no-repeat;
 }
 
-.dizmo-checkbox-label span {
+.dizmo-checkbox .dizmo-checkbox-label span {
     display: inline-block;
     vertical-align: middle;
 }
 
-.dizmo-checkbox-label {
+.dizmo-checkbox .dizmo-checkbox-label {
     font-family: "Pharma-RegularCon";
     font-weight: normal;
     cursor: pointer;
     vertical-align: middle;
-    color: rgb(237, 237, 237);
 }
 /* End Checkbox CSS */
 /********************/
@@ -77,7 +50,6 @@ button.dizmo-button-dark:active {
 /* Start Custom Selectbox CSS */
 .dizmo-selectbox {
     height: 48px;
-    border: 1px solid rgb(237, 237, 237);
     position: relative;
     border-radius: 10px;
     font-size: 16px;
@@ -92,7 +64,6 @@ button.dizmo-button-dark:active {
     line-height: 48px;
     text-indent: 10px;
     display: inline-block;
-    color: rgb(237, 237, 237);
     font-family: "Pharma-Bold";
 }
 
@@ -102,7 +73,6 @@ button.dizmo-button-dark:active {
     right: 10px;
     height: 15px;
     width: 15px;
-    background: url('images/selectbox/arrow_down.svg') 0 0 no-repeat;
 }
 
 .dizmo-selectbox ul.dizmo-selectbox-list {
@@ -112,8 +82,6 @@ button.dizmo-button-dark:active {
     position: absolute;
     z-index: 1000;
     left: -1px;
-    background-color: rgba(60, 60, 60, 1);
-    border: 1px solid rgb(237, 237, 237);
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
 }
@@ -122,7 +90,6 @@ button.dizmo-button-dark:active {
     text-indent: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
-    color: rgb(237, 237, 237);
 }
 
 .dizmo-selectbox ul.dizmo-selectbox-list li.dizmo-selectbox-list-entry:first-child {
@@ -132,40 +99,39 @@ button.dizmo-button-dark:active {
 .dizmo-selectbox ul.dizmo-selectbox-list li.dizmo-selectbox-list-entry:last-child {
     margin-bottom: 10px;
 }
-
-.dizmo-selectbox ul.dizmo-selectbox-list li.dizmo-selectbox-list-entry:hover {
-    color: rgb(60, 60, 60);
-    background-color: rgba(237, 237, 237, 1);
-}
 /* End Selectbox CSS*/
 /********************/
 
 /********************/
 /* Start Slider CSS */
-.dizmo-slider-parent {
-    border: 1px solid rgb(237, 237, 237);
+.dizmo-slider {
     padding: 25px;
     border-radius: 10px;
 }
 
-.dizmo-slider-parent.orientation-horizontal {
+.dizmo-slider.orientation-horizontal {
     height: 2px;
 }
 
-.dizmo-slider-parent.orientation-vertical {
+.dizmo-slider.orientation-vertical {
     width: 2px;
 }
 
-.dizmo-slider-parent .dizmo-slider {
-    background: none;
-    background-color: rgba(237, 237, 237, 1);
+.dizmo-slider .dizmo-slider-inner {
+    background-image: none;
+    background-repeat-x: initial;
+    background-repeat-y: initial;
+    background-attachment: initial;
+    background-position-x: initial;
+    background-position-y: initial;
+    background-origin: initial;
+    background-clip: initial;
     border: none;
     width: 100%;
     -apple-dashboard-region: dashboard-region(control rectangle);
 }
 
-.dizmo-slider-parent .dizmo-slider a.ui-slider-handle {
-    background: url('images/slider/handle.svg') no-repeat;
+.dizmo-slider .dizmo-slider-inner a.ui-slider-handle {
     border: none;
     width: 20px;
     height: 20px;
@@ -173,19 +139,19 @@ button.dizmo-button-dark:active {
     -apple-dashboard-region: dashboard-region(control rectangle);
 }
 
-.dizmo-slider-parent.orientation-vertical .dizmo-slider {
+.dizmo-slider.orientation-vertical .dizmo-slider-inner {
     width: 2px;
 }
 
-.dizmo-slider-parent.orientation-vertical .dizmo-slider a.ui-slider-handle {
+.dizmo-slider.orientation-vertical .dizmo-slider-inner a.ui-slider-handle {
     left: -9px;
 }
 
-.dizmo-slider-parent.orientation-horizontal .dizmo-slider {
+.dizmo-slider.orientation-horizontal .dizmo-slider-inner {
     height: 2px;
 }
 
-.dizmo-slider-parent.orientation-horizontal .dizmo-slider a.ui-slider-handle {
+.dizmo-slider.orientation-horizontal .dizmo-slider-inner a.ui-slider-handle {
     top: -9px;
 }
 
@@ -242,42 +208,6 @@ button.dizmo-switch-off span.dizmo-switch-off-box {
     -webkit-transition: left 0.5s, opacity 0.5s;
     left: 0%;
     opacity: 1;
-}
-
-button.dizmo-switch-light {
-    background-color: rgba(237, 237, 237, 1);
-    border: 1px solid rgb(60, 60, 60);
-}
-
-button.dizmo-switch-dark {
-    background-color: rgba(60, 60, 60, 1);
-    border: 1px solid rgb(237, 237, 237);
-}
-
-button.dizmo-switch-light span.dizmo-switch-box {
-    color: rgb(237, 237, 237);
-    border: 1px solid rgb(60, 60, 60);
-}
-
-button.dizmo-switch-dark span.dizmo-switch-box {
-    color: rgb(60, 60, 60);
-    border: 1px solid rgb(237, 237, 237);
-}
-
-button.dizmo-switch-light span.dizmo-switch-on-box {
-    border-left: 1px solid rgb(60, 60, 60);
-}
-
-button.dizmo-switch-light span.dizmo-switch-off-box {
-    border-right: 1px solid rgb(60, 60, 60);
-}
-
-button.dizmo-switch-dark span.dizmo-switch-on-box {
-    border-left: 1px solid rgb(237, 237, 237);
-}
-
-button.dizmo-switch-dark span.dizmo-switch-off-box {
-    border-right: 1px solid rgb(237, 237, 237);
 }
 /* End Switch CSS */
 /******************/
