@@ -1,0 +1,240 @@
+/**********************/
+/* Start checkbox CSS */
+.dizmo-checkbox-input {
+    display: none;
+}
+
+.dizmo-checkbox-input:checked + .dizmo-checkbox-label span.dizmo-checkbox-label-image {
+    background: url('images/checkbox/unchecked.svg') left top no-repeat;
+}
+
+.dizmo-checkbox-label span.dizmo-checkbox-label-image {
+    margin-right: 10px;
+    width: 25px;
+    height: 25px;
+    background: url('images/checkbox/checked.svg') left top no-repeat;
+}
+
+.dizmo-checkbox-label span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.dizmo-checkbox-label {
+    font-family: "Pharma-RegularCon";
+    font-weight: normal;
+    cursor: pointer;
+    vertical-align: middle;
+    color: rgb(237, 237, 237);
+}
+/* End Checkbox CSS */
+/********************/
+
+/******************************/
+/* Start Custom Selectbox CSS */
+.dizmo-selectbox {
+    height: 48px;
+    border: 1px solid rgb(237, 237, 237);
+    position: relative;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.dizmo-selectbox-open {
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.dizmo-selectbox span.dizmo-selectbox-text {
+    line-height: 48px;
+    text-indent: 10px;
+    display: inline-block;
+    color: rgb(237, 237, 237);
+    font-family: "Pharma-Bold";
+}
+
+.dizmo-selectbox span.dizmo-selectbox-image {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    height: 15px;
+    width: 15px;
+    background: url('images/selectbox/arrow_down.svg') 0 0 no-repeat;
+}
+
+.dizmo-selectbox ul.dizmo-selectbox-list {
+    padding: 0px;
+    margin: 0px;
+    list-style-type: none;
+    position: absolute;
+    z-index: 1000;
+    left: -1px;
+    background-color: rgba(60, 60, 60, 1);
+    border: 1px solid rgb(237, 237, 237);
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.dizmo-selectbox ul.dizmo-selectbox-list li.dizmo-selectbox-list-entry {
+    text-indent: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: rgb(237, 237, 237);
+}
+
+.dizmo-selectbox ul.dizmo-selectbox-list li.dizmo-selectbox-list-entry:first-child {
+    margin-top: 10px;
+}
+
+.dizmo-selectbox ul.dizmo-selectbox-list li.dizmo-selectbox-list-entry:last-child {
+    margin-bottom: 10px;
+}
+
+.dizmo-selectbox ul.dizmo-selectbox-list li.dizmo-selectbox-list-entry:hover {
+    color: rgb(60, 60, 60);
+    background-color: rgba(237, 237, 237, 1);
+}
+/* End Selectbox CSS*/
+/********************/
+
+/********************/
+/* Start Slider CSS */
+.dizmo-slider-parent {
+    border: 1px solid rgb(237, 237, 237);
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.dizmo-slider-parent.orientation-horizontal {
+    height: 2px;
+}
+
+.dizmo-slider-parent.orientation-vertical {
+    width: 2px;
+}
+
+.dizmo-slider-parent .dizmo-slider {
+    background: none;
+    background-color: rgba(237, 237, 237, 1);
+    border: none;
+    width: 100%;
+    -apple-dashboard-region: dashboard-region(control rectangle);
+}
+
+.dizmo-slider-parent .dizmo-slider a.ui-slider-handle {
+    background: url('images/slider/handle.svg') no-repeat;
+    border: none;
+    width: 20px;
+    height: 20px;
+    outline: none;
+    -apple-dashboard-region: dashboard-region(control rectangle);
+}
+
+.dizmo-slider-parent.orientation-vertical .dizmo-slider {
+    width: 2px;
+}
+
+.dizmo-slider-parent.orientation-vertical .dizmo-slider a.ui-slider-handle {
+    left: -9px;
+}
+
+.dizmo-slider-parent.orientation-horizontal .dizmo-slider {
+    height: 2px;
+}
+
+.dizmo-slider-parent.orientation-horizontal .dizmo-slider a.ui-slider-handle {
+    top: -9px;
+}
+
+/* End Slider CSS */
+/******************/
+
+/********************/
+/* Start Switch CSS */
+button.dizmo-switch {
+    outline: none;
+    border: none;
+    padding: 0px;
+    position: relative;
+    border-radius: 10px;
+}
+
+button.dizmo-switch span.dizmo-switch-box {
+    width: 50%;
+    height: 100%;
+    display: inline-block;
+    position: absolute;
+    top: -1px;
+    background-repeat: no-repeat;
+    border-radius: 10px;
+}
+
+button.dizmo-switch span.dizmo-switch-off-box {
+    background-color: rgba(208, 64, 72, 1);
+}
+
+button.dizmo-switch span.dizmo-switch-on-box {
+    background-color: rgb(175, 200, 25);
+}
+
+button.dizmo-switch-on span.dizmo-switch-on-box {
+    -webkit-transition: left 0.5s, opacity 0.5s;
+    left: 50%;
+    opacity: 1;
+}
+
+button.dizmo-switch-on span.dizmo-switch-off-box {
+    -webkit-transition: left 0.5s, opacity 0.5s;
+    left: 50%;
+    opacity: 0;
+}
+
+button.dizmo-switch-off span.dizmo-switch-on-box {
+    -webkit-transition: left 0.5s, opacity 0.5s;
+    left: 0%;
+    opacity: 0;
+}
+
+button.dizmo-switch-off span.dizmo-switch-off-box {
+    -webkit-transition: left 0.5s, opacity 0.5s;
+    left: 0%;
+    opacity: 1;
+}
+
+button.dizmo-switch-light {
+    background-color: rgba(237, 237, 237, 1);
+    border: 1px solid rgb(60, 60, 60);
+}
+
+button.dizmo-switch-dark {
+    background-color: rgba(60, 60, 60, 1);
+    border: 1px solid rgb(237, 237, 237);
+}
+
+button.dizmo-switch-light span.dizmo-switch-box {
+    color: rgb(237, 237, 237);
+    border: 1px solid rgb(60, 60, 60);
+}
+
+button.dizmo-switch-dark span.dizmo-switch-box {
+    color: rgb(60, 60, 60);
+    border: 1px solid rgb(237, 237, 237);
+}
+
+button.dizmo-switch-light span.dizmo-switch-on-box {
+    border-left: 1px solid rgb(60, 60, 60);
+}
+
+button.dizmo-switch-light span.dizmo-switch-off-box {
+    border-right: 1px solid rgb(60, 60, 60);
+}
+
+button.dizmo-switch-dark span.dizmo-switch-on-box {
+    border-left: 1px solid rgb(237, 237, 237);
+}
+
+button.dizmo-switch-dark span.dizmo-switch-off-box {
+    border-right: 1px solid rgb(237, 237, 237);
+}
+/* End Switch CSS */
+/******************/
