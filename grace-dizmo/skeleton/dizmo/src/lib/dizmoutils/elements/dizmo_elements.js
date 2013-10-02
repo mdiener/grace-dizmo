@@ -193,7 +193,18 @@ jQuery.widget('dizmo.dselectbox', {
         var self = this;
 
         self.element.val(val);
-        self.element.trigger('change');
+
+        var options = self.element.children('option');
+        var noVal = true;
+        options.each(function(i, el) {
+            if (val === el.attr('value')) {
+                noVal = false;
+            }
+        });
+
+        if (!noVal) {
+            self.element.trigger('change');
+        }
     },
 
     _setValue: function(val) {
@@ -201,6 +212,16 @@ jQuery.widget('dizmo.dselectbox', {
 
         var text = self.element.children('option[value="' + val + '"]').text();
         self._wrapper.children('.dizmo-selectbox-text').text(text);
+    },
+
+    value: function(val) {
+        var self = this;
+
+        if (jQuery.type(val) === 'undefined') {
+            return self.element.val();
+        }
+
+        self._selectValue(val);
     },
 
     /**
