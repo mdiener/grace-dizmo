@@ -299,6 +299,7 @@ jQuery.widget('dizmo.dswitch', {
             return null;
         }
 
+        this.element.text('');
         this.element.addClass('dizmo-switch');
         this._changeTheme(this.options.theme);
 
