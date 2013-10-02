@@ -40,14 +40,12 @@ The class itself is well documented and you are encouraged to look into it when 
 
 ### Overview of Dizmo.js (The wrapper around dizmos API)
 
-All the functions, etc. are written as being called inside Main (from the file Main.js).
-
 #### Methods
 
 ##### save
 
 ```javascript
-self.getDizmo().save(path, value);
+PROJECTNAME.Dizmo.save(path, value);
 ```
 
 Saves the provided value in the provided path. This will make it persistent: On a reload of the dizmo, the value will still be at the same place (at the saved path).
@@ -55,7 +53,7 @@ Saves the provided value in the provided path. This will make it persistent: On 
 ##### load
 
 ```javascript
-self.getDizmo().load(path);
+PROJECTNAME.Dizmo.load(path);
 ```
 
 Loads a path that was previously saved with the provided save function. The values loaded are JavaScript types. So if you have saved a number, you will get a number back; if you saved an object, you will get an object back.
@@ -63,7 +61,7 @@ Loads a path that was previously saved with the provided save function. The valu
 ##### showFront
 
 ```javascript
-self.getDizmo().showFront();
+PROJECTNAME.Dizmo.showFront();
 ```
 
 Shows the front of the dizmo. This also trigger the event _dizmo.turned_.
@@ -71,7 +69,7 @@ Shows the front of the dizmo. This also trigger the event _dizmo.turned_.
 ##### showBack
 
 ```javascript
-self.getDizmo().showBack();
+PROJECTNAME.Dizmo.showBack();
 ```
 
 Shows the back of the dizmo. This also trigger the event _dizmo.turned_.
@@ -145,5 +143,172 @@ Example:
 ```javascript
 jQuery(events).on('dizmo.undocked', function(e) {
     // do something when the dizmo has been undocked
+});
+```
+
+Dizmo Elements
+--------------
+
+There are several elements that can be used to style your dizmo in a "dizmo" fashion. The following is a list and usage example of the elements currently provided.
+All of these elements can be added to the DOM in the html file. If any of these has their respective data-type, they will automatically be transformed to their widget counterpart. This only works once on the first time the dizmo is instantiated (or reloaded).
+
+### Checkbox
+
+Transforms your checkboxes into dizmo themed checkboxes. No additional events or anything is required to use this. It is solely a cosmetic change.
+
+#### Data-Type
+```html
+<input type="checkbox" data-type="dizmo-checkbox" />
+```
+
+#### Constraints
+
+Works only on checkbox elements.
+
+#### Usage
+
+```javascript
+jQuery('.my-checkbox-element').dcheckbox();
+```
+
+### Slider
+
+Creates a slider tha can be used as an element. This is only an extension to the jQuery slider plugin (http://jqueryui.com/slider/). Everything that applies to the plugin, usage, etc. does also apply to this widget.
+
+#### Data-Type
+```html
+<div data-type="dizmo-slider"></div>
+```
+
+#### Constraints
+
+All the constraints that apply to the jQuery UI slider apply here too. Please refer to the widget on the jQuery UI site: http://jqueryui.com/slider/.
+
+#### Usage
+
+```javascript
+jQuery('.my-slider-div').dslider();
+```
+
+The next example shows how to attach an event handler to the slider.
+
+```javascript
+jQuery('.my-slider-div').sdlider({
+    change: function(e, ui) {
+        // Do something on slide change
+    }
+});
+
+### Selectbox
+
+The selectbox widget enhances a default html selectbox and styles it to fall in line with other dizmo elements.
+
+#### Data-Type
+```html
+<select data-type="dizmo-selectbox">
+    <option value="1">One</option>
+    <option value="2">Two</option>
+</select>
+```
+
+#### Constraints
+
+Everything should work as it does on a default selectbox. The change event is being propagated, so you can just use the default jquery event to interact with the widget. It only works on select elements.
+If the underlying element changes, a call to the update function is needed.
+
+#### Usage
+
+```javascript
+jQuery('.my-select-element').dselectbox();
+```
+
+To update the element when the underlying select changes:
+```javascript
+jQuery('.my-select-element').dselectbox('update');
+```
+
+To set the value programmatically, use the provided value function. This is necessary, because the val() function on the select element from jQuery does not trigger the change event.
+```javascript
+jQuery('.my-select-element').dselectbox('value', 'b');
+```
+
+To get the value, one can either use
+```javascript
+jQuery('.my-select-element').val();
+```
+or
+```javascript
+jQuery('.my-select-element').dselectbox('value');
+```
+
+### Switch
+
+A simple on/off switch made from a button. The widget provides some functionality to change the switch and get the current state, as well as set the height and width of the switch.
+
+#### Data-Type
+```html
+<button data-type="dizmo-switch"></button>
+```
+
+#### Constraints
+
+None.
+
+#### Usage
+
+To create the widget, a button element is necessary. It will not work with any other element.
+
+```javascript
+jQuery('.my-button-element').dswitch();
+```
+
+You can supply the initialisation with additional height, width and theme parameters. There are only two themes available right now: dark and light.
+
+```javascript
+jQuery('.my-button-element').dswitch({
+    height: 50,
+    width: 100,
+    theme: 'light'
+});
+```
+
+To change the state of the button programmatically, call 'state'. The same function is also used to get the current state.
+
+```javascript
+jQuery('.my-button-element').dswitch('state', 'off');
+jQuery('.my-button-element').dswitch('state', 'on');
+
+var state = jQuery('.my-button-element').dswitch('state');
+```
+
+Once initialized, the height and width of the button can be changed through the provided 'height' and 'width' function. The same functions can be used to get the height and width.
+
+```javascript
+jQuery('.my-button-element').dswitch('height', 200);
+jQuery('.my-button-element').dswitch('width', 100);
+
+var height = jQuery('.my-button-element').dswitch('height');
+var width = jQuery('.my-button-element').dswitch('width');
+```
+
+### Button
+
+A normal button, styled to match the dizmo theme. Uses either dark or light theme.
+
+#### Data-Type
+```html
+<button data-type="dizmo-button"></button>
+```
+
+#### Constraints
+
+None.
+
+#### Usage
+
+```javascript
+jQuery('.my-button-element').dbutton();
+jQuery('.my-button-element').dbutton({
+    theme: 'light'
 });
 ```
