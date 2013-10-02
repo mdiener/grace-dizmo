@@ -75,6 +75,18 @@ jQuery.widget('dizmo.dcheckbox', {
     }
 });
 
+/**
+ * Dizmo selectbox plugin. Creates a dizmo-themed selectbox. The change event
+ * is being propagated to the underlying select element, so there is no need
+ * to attach another event handle to communicate with the widget.
+ *
+ * Usage:
+ * jQuery('.my-select-element').dselectbox();
+ *
+ * If the underlying selectbox changes, a call to the update function of the
+ * widget is required.
+ * jQuery('.my-select-element').dselectbox('update');
+ */
 jQuery.widget('dizmo.dselectbox', {
     _create: function() {
         var self = this;
@@ -191,6 +203,10 @@ jQuery.widget('dizmo.dselectbox', {
         self._wrapper.children('.dizmo-selectbox-text').text(text);
     },
 
+    /**
+     * Update the selectbox
+     * @public
+     */
     update: function() {
         var self = this;
 
@@ -201,6 +217,12 @@ jQuery.widget('dizmo.dselectbox', {
 
 /**
  * Extending the current slider from jQuery UI and adding a wrapper around.
+ *
+ * Usage:
+ * jQuery('.my-dizmo-slider').dslider();
+ *
+ * Use this slider only as a normal slider. To get a scrollbar, use the
+ * dizmoscroll library.
  */
 jQuery.widget('dizmo.dslider', jQuery.ui.slider, {
     _create: function() {
@@ -213,6 +235,35 @@ jQuery.widget('dizmo.dslider', jQuery.ui.slider, {
 
 /**
  * Create a new switch element from a button.
+ *
+ * Usage:
+ * jQuery('.my-button-element').dswitch();
+ *
+ * You can supply height, width and theme to the creation function of the button:
+ * jQuery('.my-button-element').dswitch({
+ *     width: 100,
+ *     height: 50,
+ *     theme: 'light'
+ * });
+ *
+ * Themes available by default: "dark" and "light".
+ *
+ * To change the height and/or width of the element at a later time, use the provided
+ * height and width functions.
+ * jQuery('.my-button-element').dswitch('height', 100);
+ * jQuery('.my-button-element').dswitch('width', 200);
+ *
+ * To get the height or width of the button, call these functions without any parameter.
+ * var height = jQuery('.my-button-element').dswitch('height');
+ * var width = jQuery('.my-button-element').dswitch('width');
+ *
+ * To get or set the state of the switch, call the state function.
+ * var state = jQuery('.my-button-element').dswitch('state');
+ *
+ * jQuery('.my-button-element').dswitch('state', 'on');
+ * jQuery('.my-button-element').dswitch('state', 'off');
+ *
+ * The only two states recognized are "on" and "off". Everything else will be ignored.
  */
 jQuery.widget('dizmo.dswitch', {
     options: {
