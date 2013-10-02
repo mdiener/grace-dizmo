@@ -1,4 +1,30 @@
 /**
+ * Button widget
+ *
+ * Dizmo button styling. Uses theme light and dark.
+ */
+jQuery.widget('dizmo.dbutton', {
+    options: {
+        'theme': 'light'
+    },
+
+    _create: function() {
+        if (this.element.attr('type') !== 'button') {
+            console.log('Only works on button elements!');
+            return null;
+        }
+
+        if (this.options.theme === 'light') {
+            this.element.addClass('dizmo-button-' + this.options.theme);
+        } else if (this.options.theme === 'dark') {
+            this.element.addClass('dizmo-button-' + this.options.theme);
+        }
+
+        this.element.addClass('dizmo-button');
+    }
+});
+
+/**
  * Checkbox plugin.
  *
  * Can be used to create checkboxes styled to match other dizmos.
@@ -350,4 +376,7 @@ jQuery(document).ready(function() {
 
     var elements = jQuery('button[data-type="dizmo-switch"]');
     elements.dswitch();
+
+    var elements = jQuery('button[data-type="dizmo-button"]');
+    elements.dbutton();
 });

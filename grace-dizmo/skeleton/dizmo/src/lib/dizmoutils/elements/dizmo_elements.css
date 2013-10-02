@@ -1,3 +1,46 @@
+/********************/
+/* Start Button CSS */
+button.dizmo-button {
+    display: block;
+    outline: none;
+    font-size: 16px;
+    font-family: "Pharma-Bold", sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    width: 100px;
+    height: 50px;
+    padding: 0px;
+    border-radius: 10px;
+}
+
+button.dizmo-button-light {
+    border: 1px solid rgb(60, 60, 60);
+    background-color: rgba(237, 237, 237, 1);
+    color: rgb(60, 60, 60);
+}
+
+button.dizmo-button-light:active {
+    border: 1px solid rgb(237, 237, 237);
+    background-color: rgba(60, 60, 60, 1);
+    color: rgb(237, 237, 237);
+}
+
+button.dizmo-button-dark {
+    border: 1px solid rgb(237, 237, 237);
+    background-color: rgba(60, 60, 60, 1);
+    color: rgb(237, 237, 237);
+}
+
+button.dizmo-button-dark:active {
+    border: 1px solid rgb(237, 237, 237);
+    background-color: rgba(60, 60, 60, 1);
+    color: rgb(237, 237, 237);
+}
+/* End Button CSS */
+/******************/
+
 /**********************/
 /* Start checkbox CSS */
 .dizmo-checkbox-input {
