@@ -158,7 +158,8 @@ Transforms your checkboxes into dizmo themed checkboxes. No additional events or
 
 #### Data-Type
 ```html
-<input type="checkbox" data-type="dizmo-checkbox" />
+<label for="my_checkbox">My Label</label>
+<input id="my_checkbox" type="checkbox" data-type="dizmo-checkbox" data-theme="light" />
 ```
 
 #### Constraints
@@ -177,7 +178,7 @@ Creates a slider tha can be used as an element. This is only an extension to the
 
 #### Data-Type
 ```html
-<div data-type="dizmo-slider"></div>
+<div data-type="dizmo-slider" data-theme="light"></div>
 ```
 
 #### Constraints
@@ -205,7 +206,7 @@ The selectbox widget enhances a default html selectbox and styles it to fall in 
 
 #### Data-Type
 ```html
-<select data-type="dizmo-selectbox">
+<select data-type="dizmo-selectbox" data-theme="light">
     <option value="1">One</option>
     <option value="2">Two</option>
 </select>
@@ -247,7 +248,7 @@ A simple on/off switch made from a button. The widget provides some functionalit
 
 #### Data-Type
 ```html
-<button data-type="dizmo-switch"></button>
+<button data-type="dizmo-switch" data-theme="light"></button>
 ```
 
 #### Constraints
@@ -297,7 +298,7 @@ A normal button, styled to match the dizmo theme. Uses either dark or light them
 
 #### Data-Type
 ```html
-<button data-type="dizmo-button"></button>
+<button data-type="dizmo-button" data-theme="light"></button>
 ```
 
 #### Constraints
