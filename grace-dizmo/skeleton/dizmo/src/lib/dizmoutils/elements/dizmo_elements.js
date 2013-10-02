@@ -435,9 +435,11 @@ jQuery.widget('dizmo.dswitch', {
 jQuery(document).ready(function() {
     var elements = jQuery('input[data-type="dizmo-checkbox"]');
     elements.dcheckbox();
+    elements.removeAttr('data-type');
 
     elements = jQuery('select[data-type="dizmo-selectbox"]');
     elements.dselectbox();
+    elements.removeAttr('data-type');
 
     elements = jQuery('div[data-type="dizmo-slider"]');
     elements.each(function(index, el) {
@@ -446,10 +448,13 @@ jQuery(document).ready(function() {
             orientation: or
         });
     });
+    elements.removeAttr('data-type');
 
     var elements = jQuery('button[data-type="dizmo-switch"]');
     elements.dswitch();
+    elements.removeAttr('data-type');
 
     var elements = jQuery('button[data-type="dizmo-button"]');
     elements.dbutton();
+    elements.removeAttr('data-type');
 });
