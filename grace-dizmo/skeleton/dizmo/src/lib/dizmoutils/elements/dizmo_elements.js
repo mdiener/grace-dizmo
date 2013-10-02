@@ -35,7 +35,7 @@ jQuery.widget('dizmo.dbutton', {
 jQuery.widget('dizmo.dcheckbox', {
     _create: function() {
         if (this.element.attr('type') !== 'checkbox') {
-            console.log('Checkbox only works on checkbox elements!');
+            console.log('Only works on checkbox elements!');
             return null;
         }
 
