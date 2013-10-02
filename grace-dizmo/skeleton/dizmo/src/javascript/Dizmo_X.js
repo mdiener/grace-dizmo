@@ -229,12 +229,12 @@ Class("#PROJECTNAME.Dizmo", {
 
             // Set the size and width of the dizmo to the values it had before reloading (or closing
             // of dizmos)
-            var width = self.my.load('width');
-            var height = self.my.load('height');
-            if (jQuery.type(width) === 'number') {
+            var width = parseInt(self.my.load('width'));
+            var height = parseInt(self.my.load('height'));
+            if (!isNaN(width)) {
                 dizmo.setAttribute('geometry/width', width);
             }
-            if (jQuery.type(height) === 'number') {
+            if (!isNaN(height)) {
                 dizmo.setAttribute('geometry/height', height);
             }
         }
