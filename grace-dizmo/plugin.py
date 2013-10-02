@@ -107,7 +107,8 @@ class Dizmo:
     def after_build(self):
         plist = self._get_plist()
         path = self._config['build_path']
-        source = os.path.join(os.getcwd(), 'Icon.png')
+        imageType = 'png'
+        imageSource = os.path.join(os.getcwd(), 'Icon.png')
 
         try:
             plistlib.writePlist(plist, os.path.join(path, 'Info.plist'))
@@ -115,10 +116,11 @@ class Dizmo:
             raise FileNotWritableError('Could not write plist to target location: ', path)
 
         if os.path.isfile(os.path.join(os.getcwd(), 'Icon.svg')):
-            source = os.path.join(os.getcwd(), 'Icon.svg')
+            imageType = 'svg'
+            imageSource = os.path.join(os.getcwd(), 'Icon.svg')
 
         try:
-            copy(source, os.path.join(path, 'Icon.png'))
+            copy(source, os.path.join(path, 'Icon.' + imageType))
         except:
             print 'Could not find an icon for your dizmo. You should consider placing a `Icon.png` in your root folder.'
 
