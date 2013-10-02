@@ -120,7 +120,7 @@ class Dizmo:
             imageSource = os.path.join(os.getcwd(), 'Icon.svg')
 
         try:
-            copy(source, os.path.join(path, 'Icon.' + imageType))
+            copy(imageSource, os.path.join(path, 'Icon.' + imageType))
         except:
             print 'Could not find an icon for your dizmo. You should consider placing a `Icon.png` in your root folder.'
 
