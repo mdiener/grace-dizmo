@@ -21,7 +21,8 @@ class Dizmo:
     def __init__(self):
         self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), '.local', 'share', 'data', 'futureLAB', 'dizmode', 'InstalledWidgets')
         if sys.platform.startswith('win32'):
-            self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'AppData', 'Local', 'futureLAB', 'dizmode', 'InstalledWidgets')
+            userdir = os.path.expanduser('~user')[:-4]
+            self._dizmo_deployment_path = os.path.join(userdir, 'futureLAB', 'dizmode', 'InstalledWidgets')
             self._dizmo_deployment_path = self._dizmo_deployment_path.replace('\\', '\\\\')
         if sys.platform.startswith('darwin'):
             self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'dizmode', 'InstalledWidgets')
