@@ -133,6 +133,8 @@ Class("#PROJECTNAME.Dizmo", {
         initialize: function() {
             var self = this;
 
+            DizmoHelper.DockingManager.init();
+
             // Show front and hide back on first load
             jQuery("#back").hide();
             jQuery("#front").show();
@@ -194,22 +196,24 @@ Class("#PROJECTNAME.Dizmo", {
                 jQuery(events).trigger('dizmo.onmodechanged', [val]);
             });
 
-            // Register on the canDock event and return a default of false.
-            // False => No docking will occur
-            // True => Docking might occur (if the other dizmo allows it)
-            dizmo.canDock(function(dockingDizmo) {
-                return false;
-            });
+            // Registering the canDock event with the DockingManager. By default it is provided
+            // a false, meaning the dizmo can not be docked. Refer to the DockingManager documentation
+            // for more insight on the possible values.
+            DizmoHelper.DockingManager.canDock(false);
 
-            // onDock and onUndock will not do anything as of now, since the canDock returns false,
-            // meaning the dizmo can never be docked.
-            dizmo.onDock(function(dockedDizmo) {
+            // Registering the onDock event with the DockingManager. Refer to the DockingManager documentation
+            // for more insight.
+            DizmoHelper.DockingManager.onDock(function(dockedDizmo, side) {
                 // Write code here that should happen when a dizmo has been docked.
                 // The line below is a small example on how to relay the event to other
                 // classes.
+                var allDockedDizmos = DizmoHelper.DockingManager.getDockedDizmos();
                 jQuery(events).trigger('dizmo.docked');
             });
-            dizmo.onUndock(function(undockedDizmo) {
+
+            // Registering the onDock event with the DockingManager. Refer to the DockingManager documentation
+            // for more insight.
+            DizmoHelper.DockingManager.onUndock(function(undockedDizmo) {
                 // Write code here that should happen when a dizmo has been un-docked.
                 // The line below is a small example on how to relay the event to other
                 // classes.
