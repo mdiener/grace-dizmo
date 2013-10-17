@@ -53,30 +53,72 @@ class Dizmo:
 
         if 'development_region' not in self._dizmo_config:
             raise MissingKeyError('Specify a development region in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['development_region'], str):
+                raise WrongFormatError('The development_region key needs to be a string.')
+            else:
+                if len(self._dizmo_config['development_region']) == 0:
+                    raise WrongFormatError('The development_region has to consist of at least one character.')
 
         if 'display_name' not in self._dizmo_config:
             raise MissingKeyError('Specify a display name in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['display_name'], str):
+                raise WrongFormatError('The display_name key needs to be a string.')
+            else:
+                if len(self._dizmo_config['display_name']) == 0:
+                    raise WrongFormatError('The display_name has to consist of at least one character.')
 
         if 'bundle_identifier' not in self._dizmo_config:
             raise MissingKeyError('Specify a bundle identifier in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['bundle_identifier'], str):
+                raise WrongFormatError('The bundle_identifier key needs to be a string.')
+            else:
+                if len(self._dizmo_config['bundle_identifier']) == 0:
+                    raise WrongFormatError('The bundle_identifier has to consist of at least one character.')
 
         if 'width' not in self._dizmo_config:
             raise MissingKeyError('Specify a width in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['width'], int):
+                raise WrongFormatError('The width key needs to be a number.')
 
         if 'height' not in self._dizmo_config:
             raise MissingKeyError('Specify a height in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['height'], int):
+                raise WrongFormatError('The height key needs to be a number.')
 
         if 'box_inset_x' not in self._dizmo_config:
             raise MissingKeyError('Specify a box inset x in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['box_inset_x'], int):
+                raise WrongFormatError('The box_inset_x key needs to be a number.')
 
         if 'box_inset_y' not in self._dizmo_config:
             raise MissingKeyError('Specify a box inset y in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['box_inset_y'], int):
+                raise WrongFormatError('The box_inset_y key needs to be a number.')
 
         if 'api_version' not in self._dizmo_config:
             raise MissingKeyError('Specify an api version in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['api_version'], str):
+                raise WrongFormatError('The api_version key needs to be a string.')
+            else:
+                if len(self._dizmo_config['api_version']) == 0:
+                    raise WrongFormatError('The api_version has to consist of at least one character.')
 
         if 'main_html' not in self._dizmo_config:
             raise MissingKeyError('Specify a main html in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['main_html'], str):
+                raise WrongFormatError('The main_html key needs to be a string.')
+            else:
+                if len(self._dizmo_config['main_html']) == 0:
+                    raise WrongFormatError('The main_html has to consist of at least one character.')
 
         if 'hidden_widget' not in self._dizmo_config:
             self._dizmo_config['hidden_widget'] = False
