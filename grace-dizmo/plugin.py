@@ -54,7 +54,7 @@ class Dizmo:
         if 'development_region' not in self._dizmo_config:
             raise MissingKeyError('Specify a development region in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['development_region'], str):
+            if not isinstance(self._dizmo_config['development_region'], unicode):
                 raise WrongFormatError('The development_region key needs to be a string.')
             else:
                 if len(self._dizmo_config['development_region']) == 0:
@@ -63,7 +63,7 @@ class Dizmo:
         if 'display_name' not in self._dizmo_config:
             raise MissingKeyError('Specify a display name in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['display_name'], str):
+            if not isinstance(self._dizmo_config['display_name'], unicode):
                 raise WrongFormatError('The display_name key needs to be a string.')
             else:
                 if len(self._dizmo_config['display_name']) == 0:
@@ -72,7 +72,7 @@ class Dizmo:
         if 'bundle_identifier' not in self._dizmo_config:
             raise MissingKeyError('Specify a bundle identifier in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['bundle_identifier'], str):
+            if not isinstance(self._dizmo_config['bundle_identifier'], unicode):
                 raise WrongFormatError('The bundle_identifier key needs to be a string.')
             else:
                 if len(self._dizmo_config['bundle_identifier']) == 0:
@@ -105,7 +105,7 @@ class Dizmo:
         if 'api_version' not in self._dizmo_config:
             raise MissingKeyError('Specify an api version in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['api_version'], str):
+            if not isinstance(self._dizmo_config['api_version'], unicode):
                 raise WrongFormatError('The api_version key needs to be a string.')
             else:
                 if len(self._dizmo_config['api_version']) == 0:
@@ -114,7 +114,7 @@ class Dizmo:
         if 'main_html' not in self._dizmo_config:
             raise MissingKeyError('Specify a main html in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['main_html'], str):
+            if not isinstance(self._dizmo_config['main_html'], unicode):
                 raise WrongFormatError('The main_html key needs to be a string.')
             else:
                 if len(self._dizmo_config['main_html']) == 0:
@@ -273,4 +273,7 @@ class RemoveFolderError(Error):
 
 
 class MissingKeyError(Error):
+    pass
+
+class WrongFormatError(Error):
     pass
