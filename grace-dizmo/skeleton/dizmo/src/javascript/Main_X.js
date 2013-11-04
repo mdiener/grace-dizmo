@@ -26,7 +26,7 @@ Class("#PROJECTNAME.Main", {
             var self = this;
 
             jQuery('.done-btn').on('click', function() {
-                self.getDizmo().showFront();
+                #PROJECTNAME.Dizmo.showFront();
             });
         }
     }

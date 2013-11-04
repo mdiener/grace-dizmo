@@ -19,7 +19,7 @@ test("Check if attributes are set correctly.", 4, function() {
     deepEqual(dizmo.getAttribute('geometry/height'), 300);
     ok(dizmo.getAttribute('allowResize'), 'The allowResize attribute has been set correctly.');
     deepEqual('#PROJECTNAME', dizmo.getAttribute('title'), 'Title is equal');
-})
+});
 
 asyncTest('Check if the resize event is being fired.', 1, function() {
     var size = dizmo.getSize();
