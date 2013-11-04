@@ -22,10 +22,10 @@ class Dizmo:
         self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), '.local', 'share', 'data', 'futureLAB', 'dizmode', 'InstalledWidgets')
         if sys.platform.startswith('win32'):
             userdir = os.path.expanduser('~user')[:-4]
-            self._dizmo_deployment_path = os.path.join(userdir, 'futureLAB', 'dizmode', 'InstalledWidgets')
+            self._dizmo_deployment_path = os.path.join(userdir, 'dizmo', 'dizmo', 'InstalledDizmos')
             self._dizmo_deployment_path = self._dizmo_deployment_path.replace('\\', '\\\\')
         if sys.platform.startswith('darwin'):
-            self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'dizmode', 'InstalledWidgets')
+            self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'dizmo', 'InstalledDizmos')
 
     def skeleton_path(self):
         try:
