@@ -171,7 +171,6 @@ Class("#PROJECTNAME.Dizmo", {
                     dizmo.setAttribute('geometry/height', 200);
                 }
 
-                self.my.save('height', val);
                 jQuery(events).trigger('dizmo.resized', [dizmo.getWidth(), dizmo.getHeight()]);
             });
 
@@ -181,7 +180,6 @@ Class("#PROJECTNAME.Dizmo", {
                     dizmo.setAttribute('geometry/width', 200);
                 }
 
-                self.my.save('width', val);
                 jQuery(events).trigger('dizmo.resized', [dizmo.getWidth(), dizmo.getHeight()]);
             });
 
@@ -230,17 +228,6 @@ Class("#PROJECTNAME.Dizmo", {
 
             // Allow the resizing of the dizmo
             dizmo.setAttribute('allowResize', true);
-
-            // Set the size and width of the dizmo to the values it had before reloading (or closing
-            // of dizmos)
-            var width = parseInt(self.my.load('width'));
-            var height = parseInt(self.my.load('height'));
-            if (!isNaN(width)) {
-                dizmo.setAttribute('geometry/width', width);
-            }
-            if (!isNaN(height)) {
-                dizmo.setAttribute('geometry/height', height);
-            }
         }
     }
 });
