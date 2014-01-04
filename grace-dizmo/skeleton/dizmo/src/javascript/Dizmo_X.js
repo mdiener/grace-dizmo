@@ -24,6 +24,14 @@ Class("#PROJECTNAME.Dizmo", {
             },
 
             /**
+             * Get the ID of the underlying dizmo
+             * @return {String} ID of the dizmo
+             */
+            getId: function() {
+                return dizmo.identifier;
+            },
+
+            /**
              * Load the value saved at the given path. If no value is saved
              * in this path, return null. The value will be parsed through JSON as
              * this functions assumes it's saved in JSON format (see load)
@@ -32,20 +40,37 @@ Class("#PROJECTNAME.Dizmo", {
              * @static
              */
             load: function(path) {
-                var val = dizmo.privateStorage().getProperty(path);
-                var json;
+                var self = this;
 
-                if (jQuery.type(val) === 'string') {
-                    try {
-                        json = jQuery.parseJSON(val);
-                    } catch(e) {
-                        json = null;
-                    }
-                } else {
-                    json = null;
+                var value = dizmo.privateStorage().getProperty(path);
+                return self.parseTreeValue(value);
+            },
+
+            parseTreeValue: function(value) {
+                if (value === '') {
+                    return value;
                 }
 
-                return json;
+                if (isFinite(value)) {
+                    return Number(value);
+                }
+
+                if (jQuery.type(value) === 'string') {
+                    if (value === 'true') {
+                        return true;
+                    }
+                    if (value === 'false') {
+                        return false;
+                    }
+
+                    try {
+                        return JSON.parse(value);
+                    } catch(e) {
+                        return decodeURIComponent(value);
+                    }
+                } else {
+                    return null;
+                }
             },
 
             /**
@@ -57,9 +82,36 @@ Class("#PROJECTNAME.Dizmo", {
              * @static
              */
             save: function(path, value) {
-                var jsonString = JSON.stringify(value);
+                var self = this;
 
-                dizmo.privateStorage().setProperty(path, jsonString);
+                if (jQuery.type(path) !== 'string') {
+                    console.log('You have to provide a string as a path.');
+                    return;
+                }
+
+                if (jQuery.type(value) === 'string') {
+                    value = encodeURIComponent(value);
+                } else if (jQuery.type(value) === 'number') {
+                    value = value.toString();
+                } else if (jQuery.type(value) === 'boolean') {
+                    value = value.toString();
+                } else if (jQuery.type(value) === 'object' || jQuery.type(value) === 'array') {
+                    value = JSON.stringify(value);
+                } else if (jQuery.type(value) === 'null') {
+                    console.log('To delete a value, please use the respecitve function.');
+                    return;
+                } else {
+                    console.log('Please provide a value to save to ' + path + '.');
+                    return;
+                }
+
+                dizmo.privateStorage().setProperty(path, value);
+            },
+
+            setTitle: function(value) {
+                if (jQuery.type(value) === 'string') {
+                    dizmo.setAttribute('title', value);
+                }
             },
 
             /**
@@ -121,6 +173,32 @@ Class("#PROJECTNAME.Dizmo", {
                 }
 
                 dizmo.setSize(width, height);
+            },
+
+            subscribe: function(path, callback) {
+                var self = this;
+
+                if (jQuery.type(callback) !== 'function') {
+                    console.log('Please only provide a function as the callback.');
+                    return null;
+                }
+                if (jQuery.type(path) !== 'string') {
+                    console.log('Please only provide a string as the path.');
+                    return null;
+                }
+
+                var id = null;
+                id = dizmo.privateStorage().subscribeTo(path, function(path, val, oldVal) {
+                    var val = self.load(path);
+
+                    callback.call(self, val);
+                });
+
+                return id;
+            },
+
+            unsubscribe: function(id) {
+                dizmo.privateStorage().unsubscribe(id);
             }
         }
     },
@@ -167,19 +245,11 @@ Class("#PROJECTNAME.Dizmo", {
 
             // Subscribe to height changes of the dizmo
             dizmo.subscribeToAttribute('geometry/height', function(path, val, oldVal) {
-                if (val < 200) {
-                    dizmo.setAttribute('geometry/height', 200);
-                }
-
                 jQuery(events).trigger('dizmo.resized', [dizmo.getWidth(), dizmo.getHeight()]);
             });
 
             // Subscribe to width changes of the dizmo
             dizmo.subscribeToAttribute('geometry/width', function(path, val, oldVal) {
-                if (val < 200) {
-                    dizmo.setAttribute('geometry/width', 200);
-                }
-
                 jQuery(events).trigger('dizmo.resized', [dizmo.getWidth(), dizmo.getHeight()]);
             });
 
@@ -228,6 +298,8 @@ Class("#PROJECTNAME.Dizmo", {
 
             // Allow the resizing of the dizmo
             dizmo.setAttribute('allowResize', true);
+            dizmo.setAttribute('geometry/minHeight', 200);
+            dizmo.setAttribute('geometry/minWidth', 200);
         }
     }
 });
