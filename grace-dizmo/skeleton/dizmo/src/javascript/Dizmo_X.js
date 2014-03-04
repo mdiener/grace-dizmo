@@ -89,6 +89,15 @@ Class("#PROJECTNAME.Dizmo", {
                     return;
                 }
 
+                value = self.prepareValue(value);
+                if (jQuery.type(value) === 'null') {
+                    return;
+                }
+
+                dizmo.privateStorage().setProperty(path, value);
+            },
+
+            prepareValue: function(value) {
                 if (jQuery.type(value) === 'string') {
                     value = encodeURIComponent(value);
                 } else if (jQuery.type(value) === 'number') {
@@ -99,13 +108,13 @@ Class("#PROJECTNAME.Dizmo", {
                     value = JSON.stringify(value);
                 } else if (jQuery.type(value) === 'null') {
                     console.log('To delete a value, please use the respecitve function.');
-                    return;
+                    return null;
                 } else {
                     console.log('Please provide a value to save to ' + path + '.');
-                    return;
+                    return null;
                 }
 
-                dizmo.privateStorage().setProperty(path, value);
+                return value;
             },
 
             setTitle: function(value) {
@@ -116,24 +125,30 @@ Class("#PROJECTNAME.Dizmo", {
 
             /**
              * Publish the path with the chosen value. If no path is specified, meaning if
-             * the function is called with only val, it will use the standard publish path
+             * the function is called with only value, it will use the standard publish path
              * 'stdout'.
-             * @param  {String} path The path to publish to
-             * @param  {Mixed}  val  The value to set the publish path to
+             * @param  {String} path   The path to publish to
+             * @param  {Mixed}  value  The value to set the publish path to
              * @static
              */
-            publish: function(path, val) {
+            publish: function(path, value) {
+                var self = this;
+
                 if (jQuery.type(path) === 'undefined') {
                     return;
                 }
 
-                if (jQuery.type(val) === 'undefined') {
-                    val = path;
+                if (jQuery.type(value) === 'undefined') {
+                    value = path;
                     path = 'stdout';
                 }
 
-                var jsonString = JSON.stringify(val);
-                dizmo.publicStorage().setProperty(path, jsonString);
+                value = self.prepareValue(value);
+                if (jQuery.type(value) === 'null') {
+                    return;
+                }
+
+                dizmo.publicStorage().setProperty(path, value);
             },
 
             /**
@@ -211,7 +226,9 @@ Class("#PROJECTNAME.Dizmo", {
         initialize: function() {
             var self = this;
 
-            DizmoHelper.DockingManager.init();
+            DizmoHelper.DockingManager.init({
+                directional: false
+            });
 
             // Show front and hide back on first load
             jQuery("#back").hide();
