@@ -1,5 +1,3 @@
-//= require MyDizmo
-
 var events = {}
 var diz = new #PROJECTNAME.Dizmo();
 
