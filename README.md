@@ -17,7 +17,7 @@ Upon building a new dizmo, there will be a special config file placed in your pr
 Dizmo
 -----
 
-The first module provided is for dizmo development. You can use this by creating a new project with the _--type dizmo_ switch. Other than that, all the commands stay the same.
+The first module provided is for dizmo development. Just specify _dizmo_ when creating a new project as the plugin.
 
 The dizmo plugin adds additional config options in the project.cfg file. The following is a list of adjustable options:
 * development_region: The region you develop your dizmo.
