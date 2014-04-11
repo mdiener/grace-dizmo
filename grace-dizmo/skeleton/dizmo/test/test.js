@@ -1,3 +1,4 @@
+//= require CustomAssertions
 //= require test_dizmo
 
 QUnit.begin(function() {
