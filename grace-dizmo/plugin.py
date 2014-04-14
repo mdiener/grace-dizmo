@@ -123,10 +123,10 @@ class Dizmo:
         if 'hidden_widget' not in self._dizmo_config:
             self._dizmo_config['hidden_widget'] = False
 
-    def _get_plist(self, test=False):
+    def _get_plist(self, testname=None, test=False):
         if test:
             display_name = self._dizmo_config['display_name'] + ' Test'
-            identifier = self._dizmo_config['bundle_identifier'] + '.test'
+            identifier = self._dizmo_config['bundle_identifier'] + '.' + testname
         else:
             display_name = self._dizmo_config['display_name']
             identifier = self._dizmo_config['bundle_identifier']
@@ -170,9 +170,9 @@ class Dizmo:
             except:
                 print 'Could not copy your Icon.svg file.'
 
-    def after_test(self):
-        plist = self._get_plist(test=True)
-        path = self._config['test_build_path']
+    def after_test(self, testname):
+        plist = self._get_plist(testname, test=True)
+        path = os.path.join(os.getcwd(), 'build', self._config['name'] + '_' + testname)
 
         try:
             plistlib.writePlist(plist, os.path.join(path, 'Info.plist'))
@@ -189,24 +189,20 @@ class Dizmo:
 
         return line
 
-    def after_deploy(self):
+    def after_deploy(self, testname):
         if self._config['test']:
-            source = os.path.join(self._config['deployment_path'], self._config['name'] + '_test')
-            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'] + '.test')
-
-            try:
-                self._move_deploy(source, dest)
-            except:
-                raise
-
-        if self._config['build']:
-            source = os.path.join(self._config['deployment_path'], self._config['name'])
+            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'] + '.' + testname)
+            source = os.path.join(self._config['deployment_path'], self._config['name'] + '_' + testname)
+        elif self._config['build']:
             dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'])
+            source = os.path.join(self._config['deployment_path'], self._config['name'])
+        else:
+            raise MissingKeyError()
 
-            try:
-                self._move_deploy(source, dest)
-            except:
-                raise
+        try:
+            self._move_deploy(source, dest)
+        except:
+            raise
 
     def _move_deploy(self, source, dest):
         if os.path.exists(dest):
@@ -220,27 +216,32 @@ class Dizmo:
         except:
             raise FileNotWritableError('Could not move the deploy target to the dizmo path.')
 
-    def after_zip(self):
+    def after_zip(self, testname):
         if self._config['test']:
-            try:
-                self._move_zip(self._config['name'] + '_test')
-            except:
-                raise
+            name = self._config['name'] + '_' + testname
+        elif self._config['build']:
+            name = self._config['name']
+        else:
+            raise MissingKeyError()
 
-        if self._config['build']:
-            try:
-                self._move_zip(self._config['name'])
-            except:
-                raise
+        source = os.path.join(os.getcwd(), 'build', name + '_v' + self._config['version'] + '.zip')
+        dest = os.path.join(os.getcwd(), 'build', name + '_v' + self._config['version'] + '.dzm')
 
-    def _move_zip(self, name):
         try:
-            source = os.path.join(self._config['zip_path'], name + '_v' + self._config['version'] + '.zip')
-            dest = os.path.join(self._config['zip_path'], name + '_v' + self._config['version'] + '.dzm')
+            self._move_zip(source, dest)
         except:
-            source = os.path.join(os.getcwd(), 'build', name + '_v' + self._config['version'] + '.zip')
-            dest = os.path.join(os.getcwd(), 'build', name + '_v' + self._config['version'] + '.dzm')
+            raise
 
+        if 'zip_path' in self._config:
+            source = dest
+            dest = os.path.join(self._config['zip_path'], name + '_v' + self._config['version'] + '.dzm')
+
+            try:
+                self._move_zip(source, dest)
+            except:
+                raise
+
+    def _move_zip(self, source, dest):
         if os.path.exists(dest):
             try:
                 os.remove(dest)
@@ -274,6 +275,7 @@ class RemoveFolderError(Error):
 
 class MissingKeyError(Error):
     pass
+
 
 class WrongFormatError(Error):
     pass
