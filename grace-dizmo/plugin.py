@@ -126,7 +126,7 @@ class Dizmo:
     def _get_plist(self, testname=None, test=False):
         if test:
             display_name = self._dizmo_config['display_name'] + ' Test'
-            identifier = self._dizmo_config['bundle_identifier'] + '.' + testname
+            identifier = self._dizmo_config['bundle_identifier'] + '.' + testname.lower()
         else:
             display_name = self._dizmo_config['display_name']
             identifier = self._dizmo_config['bundle_identifier']
@@ -191,7 +191,7 @@ class Dizmo:
 
     def after_deploy(self, testname):
         if self._config['test']:
-            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'] + '.' + testname)
+            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'] + '.' + testname.lower())
             source = os.path.join(self._config['deployment_path'], self._config['name'] + '_' + testname)
         elif self._config['build']:
             dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'])
