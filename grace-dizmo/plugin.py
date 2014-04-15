@@ -125,17 +125,19 @@ class Dizmo:
 
     def _get_plist(self, testname=None, test=False):
         if test:
-            display_name = self._dizmo_config['display_name'] + ' Test'
+            display_name = self._dizmo_config['display_name'] + ' ' + testname
             identifier = self._dizmo_config['bundle_identifier'] + '.' + testname.lower()
+            bundle_name = self._bundle_name + '-' + testname
         else:
             display_name = self._dizmo_config['display_name']
             identifier = self._dizmo_config['bundle_identifier']
+            bundle_name = self._bundle_name
 
         return dict(
             CFBundleDevelopmentRegion=self._dizmo_config['development_region'],
             CFBundleDisplayName=display_name,
             CFBundleIdentifier=identifier,
-            CFBundleName=self._bundle_name,
+            CFBundleName=bundle_name,
             CFBundleShortVersionString=self._config['version'],
             CFBundleVersion=self._config['version'],
             CloseBoxInsetX=self._dizmo_config['box_inset_x'],
