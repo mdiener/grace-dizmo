@@ -193,10 +193,10 @@ class Dizmo:
 
     def after_deploy(self, testname):
         if self._config['test']:
-            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'] + '.' + testname.lower())
+            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'].lower() + '.' + testname.lower())
             source = os.path.join(self._config['deployment_path'], self._config['name'] + '_' + testname)
         elif self._config['build']:
-            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'])
+            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'].lower())
             source = os.path.join(self._config['deployment_path'], self._config['name'])
         else:
             raise MissingKeyError()
