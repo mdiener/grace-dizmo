@@ -64,7 +64,7 @@ Loads a path that was previously saved with the provided save function. The valu
 PROJECTNAME.Dizmo.showFront();
 ```
 
-Shows the front of the dizmo. This also trigger the event _dizmo.turned_.
+Shows the front of the dizmo. This also triggers the event _dizmo.turned_.
 
 ##### showBack
 
@@ -72,11 +72,11 @@ Shows the front of the dizmo. This also trigger the event _dizmo.turned_.
 PROJECTNAME.Dizmo.showBack();
 ```
 
-Shows the back of the dizmo. This also trigger the event _dizmo.turned_.
+Shows the back of the dizmo. This also triggers the event _dizmo.turned_.
 
 ### Events
 
-The dizmo class provides a set of predefined events. You can register yourself on these by calling by using the following statement in your code:
+The dizmo class provides a set of predefined events. You can register yourself on these by using the following statement in your code:
 
 ```javascript
 jQuery(events).on('dizmo.turned', function(e, side) {
@@ -154,7 +154,7 @@ All of these elements can be added to the DOM in the html file. If any of these 
 
 ### Checkbox
 
-Transforms your checkboxes into dizmo themed checkboxes. No additional events or anything is required to use this. It is solely a cosmetic change.
+Transforms your checkboxes into dizmo themed checkboxes. No additional events or anything are required to use this. It is solely a cosmetic change.
 
 #### Data-Type
 ```html
@@ -174,7 +174,7 @@ jQuery('.my-checkbox-element').dcheckbox();
 
 ### Slider
 
-Creates a slider tha can be used as an element. This is only an extension to the jQuery slider plugin (http://jqueryui.com/slider/). Everything that applies to the plugin, usage, etc. does also apply to this widget.
+Creates a slider that can be used as an element. This is only an extension to the jQuery slider plugin (http://jqueryui.com/slider/). Everything that applies to the plugin, usage, etc. also applies to this widget.
 
 #### Data-Type
 ```html
@@ -183,7 +183,7 @@ Creates a slider tha can be used as an element. This is only an extension to the
 
 #### Constraints
 
-All the constraints that apply to the jQuery UI slider apply here too. Please refer to the widget on the jQuery UI site: http://jqueryui.com/slider/.
+All the constraints that apply to the jQuery UI slider apply here, too. Please refer to the widget on the jQuery UI site: http://jqueryui.com/slider/.
 
 #### Usage
 
@@ -194,11 +194,12 @@ jQuery('.my-slider-div').dslider();
 The next example shows how to attach an event handler to the slider.
 
 ```javascript
-jQuery('.my-slider-div').sdlider({
+jQuery('.my-slider-div').dslider({
     change: function(e, ui) {
         // Do something on slide change
     }
 });
+```
 
 ### Selectbox
 
@@ -214,7 +215,7 @@ The selectbox widget enhances a default html selectbox and styles it to fall in 
 
 #### Constraints
 
-Everything should work as it does on a default selectbox. The change event is being propagated, so you can just use the default jquery event to interact with the widget. It only works on select elements.
+Everything should work as it does on a default selectbox. The change event is being propagated, so you can just use the default jQuery event to interact with the widget. It only works on select elements.
 If the underlying element changes, a call to the update function is needed.
 
 #### Usage
@@ -263,7 +264,7 @@ To create the widget, a button element is necessary. It will not work with any o
 jQuery('.my-button-element').dswitch();
 ```
 
-You can supply the initialisation with additional height, width and theme parameters. There are only two themes available right now: dark and light.
+You can supply the initialization with additional height, width and theme parameters. There are only two themes available right now: dark and light.
 
 ```javascript
 jQuery('.my-button-element').dswitch({
