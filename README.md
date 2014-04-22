@@ -154,7 +154,7 @@ All of these elements can be added to the DOM in the html file. If any of these 
 
 ### Checkbox
 
-Transforms your checkboxes into dizmo themed checkboxes. No additional events are anything is required to use this. It is solely a cosmetic change.
+Transforms your checkboxes into dizmo themed checkboxes. No additional events or anything are required to use this. It is solely a cosmetic change.
 
 #### Data-Type
 ```html
@@ -174,7 +174,7 @@ jQuery('.my-checkbox-element').dcheckbox();
 
 ### Slider
 
-Creates a slider that can be used as an element. This is only an extension to the jQuery slider plugin (http://jqueryui.com/slider/). Everything that applies to the plugin, usage, etc. does also apply to this widget.
+Creates a slider that can be used as an element. This is only an extension to the jQuery slider plugin (http://jqueryui.com/slider/). Everything that applies to the plugin, usage, etc. also applies to this widget.
 
 #### Data-Type
 ```html
