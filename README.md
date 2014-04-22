@@ -199,6 +199,7 @@ jQuery('.my-slider-div').dslider({
         // Do something on slide change
     }
 });
+```
 
 ### Selectbox
 
