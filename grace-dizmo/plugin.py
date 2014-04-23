@@ -19,7 +19,7 @@ def get_path():
 
 class Dizmo:
     def __init__(self):
-        self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), '.local', 'share', 'data', 'futureLAB', 'dizmode', 'InstalledWidgets')
+        self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), '.local', 'share', 'data', 'dizmo', 'dizmo', 'InstalledDizmos')
         if sys.platform.startswith('win32'):
             userdir = os.path.expanduser('~user')[:-4]
             self._dizmo_deployment_path = os.path.join(userdir, 'dizmo', 'dizmo', 'InstalledDizmos')
