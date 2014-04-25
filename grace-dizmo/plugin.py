@@ -51,15 +51,6 @@ class Dizmo:
 
         self._dizmo_config = self._config['dizmo_settings']
 
-        if 'development_region' not in self._dizmo_config:
-            raise MissingKeyError('Specify a development region in your config file under `dizmo_settings`.')
-        else:
-            if not isinstance(self._dizmo_config['development_region'], unicode):
-                raise WrongFormatError('The development_region key needs to be a string.')
-            else:
-                if len(self._dizmo_config['development_region']) == 0:
-                    raise WrongFormatError('The development_region has to consist of at least one character.')
-
         if 'display_name' not in self._dizmo_config:
             raise MissingKeyError('Specify a display name in your config file under `dizmo_settings`.')
         else:
@@ -68,6 +59,15 @@ class Dizmo:
             else:
                 if len(self._dizmo_config['display_name']) == 0:
                     raise WrongFormatError('The display_name has to consist of at least one character.')
+
+        if 'bundle_name' not in self._dizmo_config:
+            raise MissingKeyError('Please specify a "bundle_name" under the dizmo_settings key in your project.cfg file.')
+        else:
+            if not isinstance(self._dizmo_config['bundle_name'], unicode):
+                raise WrongFormatError('The bundle_name key needs to be a string.')
+            else:
+                if len(self._dizmo_config['bundle_name']) == 0:
+                    raise WrongFormatError('The bundle_name needs to be at least one character long.')
 
         if 'bundle_identifier' not in self._dizmo_config:
             raise MissingKeyError('Specify a bundle identifier in your config file under `dizmo_settings`.')
@@ -120,33 +120,30 @@ class Dizmo:
                 if len(self._dizmo_config['main_html']) == 0:
                     raise WrongFormatError('The main_html has to consist of at least one character.')
 
-        if 'hidden_widget' not in self._dizmo_config:
-            self._dizmo_config['hidden_widget'] = False
+        if 'hidden_dizmo' not in self._dizmo_config:
+            self._dizmo_config['hidden_dizmo'] = False
 
     def _get_plist(self, testname=None, test=False):
         if test:
             display_name = self._dizmo_config['display_name'] + ' ' + testname
             identifier = self._dizmo_config['bundle_identifier'] + '.' + testname.lower()
-            bundle_name = self._bundle_name + '-' + testname
         else:
             display_name = self._dizmo_config['display_name']
             identifier = self._dizmo_config['bundle_identifier']
-            bundle_name = self._bundle_name
 
         return dict(
-            CFBundleDevelopmentRegion=self._dizmo_config['development_region'],
-            CFBundleDisplayName=display_name,
-            CFBundleIdentifier=identifier,
-            CFBundleName=bundle_name,
-            CFBundleShortVersionString=self._config['version'],
-            CFBundleVersion=self._config['version'],
+            bundleDisplayName=display_name,
+            bundleIdentifier=identifier,
+            bundleName=self._dizmo_config['bundle_name'],
+            bundleShortVersionString=self._config['version'],
+            bundleVersion=self._config['version'],
             CloseBoxInsetX=self._dizmo_config['box_inset_x'],
             CloseBoxInsetY=self._dizmo_config['box_inset_y'],
             MainHTML=self._dizmo_config['main_html'],
             Width=self._dizmo_config['width'],
             Height=self._dizmo_config['height'],
-            KastellanAPIVersion=self._dizmo_config['api_version'],
-            hiddenWidget=self._dizmo_config['hidden_widget']
+            apiVersion=self._dizmo_config['api_version'],
+            hiddenDizmo=self._dizmo_config['hidden_dizmo']
         )
 
     def after_build(self):
