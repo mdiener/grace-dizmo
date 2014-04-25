@@ -235,7 +235,7 @@ class Dizmo:
             raise
 
         if 'zip_path' in self._config:
-            source = dest
+            source = os.path.join(self._config['zip_path'], name + '_v' + self._config['version'] + '.zip')
             dest = os.path.join(self._config['zip_path'], name + '_v' + self._config['version'] + '.dzm')
 
             try:
