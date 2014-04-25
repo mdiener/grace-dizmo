@@ -20,7 +20,7 @@ setup(
     name='grace_dizmo',
     description='A plugin for grace',
     author='Michael Diener',
-    author_email='dm.menthos@gmail.com',
+    author_email='michael@webdiener.ch',
     url='https://github.com/mdiener/grace-dizmo',
     version='0.1.46',
     license='LICENSE.txt',
