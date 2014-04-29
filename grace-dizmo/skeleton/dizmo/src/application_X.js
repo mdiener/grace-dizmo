@@ -20,5 +20,5 @@ var events = {};
 
 // As soon as the dom is loaded, call instantiate the main class
 jQuery(document).ready(function() {
-    new #PROJECTNAME.Main();
+    new ##PROJECTNAME##.Main();
 });

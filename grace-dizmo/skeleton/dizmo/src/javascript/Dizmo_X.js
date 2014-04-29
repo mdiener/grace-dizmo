@@ -4,7 +4,7 @@
  * @description
  * This class serves as a basis for a custom wrapper around the dizmo API. It should be extended by the developer and can be used as a reference as to how an interaction with the API could work out. Some basic events are already programmed and can be used.
  */
-Class("#PROJECTNAME.Dizmo", {
+Class("##PROJECTNAME##.Dizmo", {
     my: {
         methods: {
             /**
