@@ -184,7 +184,7 @@ class Dizmo:
             print 'Could not find an icon for your dizmo. You should consider placing a `Icon.png` in your root folder.'
 
     def new_replace_line(self, line):
-        line = line.replace('#DIZMODEPLOYMENTPATH', self._dizmo_deployment_path)
+        line = line.replace('##DIZMODEPLOYMENTPATH##', self._dizmo_deployment_path)
 
         return line
 
