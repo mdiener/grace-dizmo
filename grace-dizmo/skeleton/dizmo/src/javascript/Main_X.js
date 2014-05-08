@@ -3,7 +3,7 @@
 Class("##PROJECTNAME##.Main", {
     has: {
         // This will be your wrapper around the dizmo API. It is instantiated
-        // before the the initialize function (defined below) is called and can
+        // before the initialize function (defined below) is called and can
         // therefor already be used there.
         dizmo: {
             is: 'ro',
