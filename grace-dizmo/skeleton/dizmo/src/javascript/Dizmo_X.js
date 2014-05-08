@@ -296,7 +296,7 @@ Class("##PROJECTNAME##.Dizmo", {
                 jQuery(events).trigger('dizmo.docked');
             });
 
-            // Registering the onDock event with the DockingManager. Refer to the DockingManager documentation
+            // Registering the onUndock event with the DockingManager. Refer to the DockingManager documentation
             // for more insight.
             DizmoHelper.DockingManager.onUndock(function(undockedDizmo) {
                 // Write code here that should happen when a dizmo has been un-docked.
