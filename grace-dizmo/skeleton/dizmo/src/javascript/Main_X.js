@@ -8,7 +8,7 @@ Class("##PROJECTNAME##.Main", {
         dizmo: {
             is: 'ro',
             init: function() {
-                return new #PROJECTNAME.Dizmo();
+                return new ##PROJECTNAME##.Dizmo();
             }
         }
     },
