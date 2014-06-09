@@ -123,15 +123,6 @@ class Dizmo:
         if 'hidden_dizmo' not in self._dizmo_config:
             self._dizmo_config['hidden_dizmo'] = False
 
-        if 'dizmo_elements_version' not in self._dizmo_config:
-            raise MissingKeyError('Specify a version of the dizmo elements library in the key: "dizmo_elements_version".')
-        else:
-            if not isinstance(self._dizmo_config['main_html'], unicode):
-                raise WrongFormatError('The "dizmo_elements_version" needs to be a string')
-            else:
-                if len(self._dizmo_config)
-                    raise WrongFormatError('The "dizmo_elements_version" string needs to be at least one character long.')
-
     def _get_plist(self, testname=None, test=False):
         if test:
             display_name = self._dizmo_config['display_name'] + ' ' + testname
@@ -152,8 +143,7 @@ class Dizmo:
             Width=self._dizmo_config['width'],
             Height=self._dizmo_config['height'],
             apiVersion=self._dizmo_config['api_version'],
-            hiddenDizmo=self._dizmo_config['hidden_dizmo'],
-            dizmoElementsVersion=self._dizmo_config['dizmo_elements_version']
+            hiddenDizmo=self._dizmo_config['hidden_dizmo']
         )
 
     def after_build(self):
