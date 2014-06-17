@@ -123,6 +123,9 @@ class Dizmo:
         if 'hidden_dizmo' not in self._dizmo_config:
             self._dizmo_config['hidden_dizmo'] = False
 
+        if 'elements_version' not in self._dizmo_config:
+            self._dizmo_config['elements_version'] = 'none'
+
     def _get_plist(self, testname=None, test=False):
         if test:
             display_name = self._dizmo_config['display_name'] + ' ' + testname
@@ -131,7 +134,7 @@ class Dizmo:
             display_name = self._dizmo_config['display_name']
             identifier = self._dizmo_config['bundle_identifier']
 
-        return dict(
+        plist = dict(
             bundleDisplayName=display_name,
             bundleIdentifier=identifier,
             bundleName=self._dizmo_config['bundle_name'],
@@ -143,8 +146,16 @@ class Dizmo:
             Width=self._dizmo_config['width'],
             Height=self._dizmo_config['height'],
             apiVersion=self._dizmo_config['api_version'],
-            hiddenDizmo=self._dizmo_config['hidden_dizmo']
+            ElementsVersion=self._dizmo_config['elements_version']
         )
+
+        if self._dizmo_config['elements_version'] != 'none':
+            plist['ElementsVersion'] = self._dizmo_config['elements_version']
+
+        if self._dizmo_config['hidden_dizmo']:
+            plist['hiddenDizmo'] = self._dizmo_config['hidden_dizmo']
+
+        return plist
 
     def after_build(self):
         plist = self._get_plist()
