@@ -205,6 +205,7 @@ class Dizmo:
         path = self._config['build_path']
         imagePNGSource = os.path.join(os.getcwd(), 'Icon.png')
         imageSVGSource = os.path.join(os.getcwd(), 'Icon.svg')
+        imagePreviewSource = os.path.join(os.getcwd(), 'Preview.png')
 
         try:
             plistlib.writePlist(plist, os.path.join(path, 'Info.plist'))
@@ -222,6 +223,12 @@ class Dizmo:
                 copy(imageSVGSource, os.path.join(path, 'Icon.svg'))
             except:
                 print 'Could not copy your Icon.svg file.'
+
+        if os.path.isfile(imagePreviewSource):
+            try:
+                copy(imagePreviewSource, os.path.join(path, 'Preview.png'))
+            except:
+                print 'Could not copy your Preview.png file.'
 
     def after_test(self, testname):
         plist = self._get_plist(testname, test=True)
