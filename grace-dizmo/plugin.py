@@ -102,6 +102,34 @@ class Dizmo:
             if not isinstance(self._dizmo_config['box_inset_y'], int):
                 raise WrongFormatError('The box_inset_y key needs to be a number.')
 
+        if 'description' not in self._dizmo_config:
+            raise MissingKeyError('Add a description in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['description'], unicode):
+                raise WrongFormatError('The description needs to be unicode string.')
+            else:
+                if len(self._dizmo_config['description']) == 0:
+                    raise WrongFormatError('The description has to consist of at least one character.')
+
+        if 'min_space_version' not in self._dizmo_config:
+            raise MissingKeyError('Add a min_space_version in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['min_space_version'], unicode):
+                raise WrongFormatError('The min_space_version needs to be unicode string.')
+            else:
+                if len(self._dizmo_config['min_space_version']) == 0:
+                    raise WrongFormatError('The min_space_version has to consist of at least one character.')
+
+
+        if 'change_log' not in self._dizmo_config:
+            raise MissingKeyError('Add a change_log in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['change_log'], unicode):
+                raise WrongFormatError('The change_log needs to be unicode string.')
+            else:
+                if len(self._dizmo_config['change_log']) == 0:
+                    raise WrongFormatError('The change_log has to consist of at least one character.')
+
         if 'api_version' not in self._dizmo_config:
             raise MissingKeyError('Specify an api version in your config file under `dizmo_settings`.')
         else:
@@ -146,7 +174,9 @@ class Dizmo:
             Width=self._dizmo_config['width'],
             Height=self._dizmo_config['height'],
             apiVersion=self._dizmo_config['api_version'],
-            ElementsVersion=self._dizmo_config['elements_version']
+            ElementsVersion=self._dizmo_config['elements_version'],
+            Description=self._dizmo_config['description'],
+            ChangeLog=self._dizmo_config['change_log']
         )
 
         if self._dizmo_config['elements_version'] != 'none':
