@@ -111,6 +111,15 @@ class Dizmo:
                 if len(self._dizmo_config['description']) == 0:
                     raise WrongFormatError('The description has to consist of at least one character.')
 
+        if 'tags' not in self._dizmo_config:
+            raise MissingKeyError('Add a tags in your config file under `dizmo_settings`.')
+        # else:
+        #     if not isinstance(self._dizmo_config['tags'], unicode):
+        #         raise WrongFormatError('The tags needs to be unicode string.')
+        #     else:
+        #         if len(self._dizmo_config['tags']) == 0:
+        #             raise WrongFormatError('The tags has to consist of at least one character.')
+
         if 'min_space_version' not in self._dizmo_config:
             raise MissingKeyError('Add a min_space_version in your config file under `dizmo_settings`.')
         else:
@@ -154,6 +163,8 @@ class Dizmo:
         if 'elements_version' not in self._dizmo_config:
             self._dizmo_config['elements_version'] = 'none'
 
+
+
     def _get_plist(self, testname=None, test=False):
         if test:
             display_name = self._dizmo_config['display_name'] + ' ' + testname
@@ -161,7 +172,7 @@ class Dizmo:
         else:
             display_name = self._dizmo_config['display_name']
             identifier = self._dizmo_config['bundle_identifier']
-
+        
         plist = dict(
             bundleDisplayName=display_name,
             bundleIdentifier=identifier,
@@ -176,7 +187,9 @@ class Dizmo:
             apiVersion=self._dizmo_config['api_version'],
             ElementsVersion=self._dizmo_config['elements_version'],
             Description=self._dizmo_config['description'],
-            ChangeLog=self._dizmo_config['change_log']
+            ChangeLog=self._dizmo_config['change_log'],
+            MinSpaceVersion=self._dizmo_config['min_space_version'],
+            Tags=map(lambda x: x.strip("'"), str(self._dizmo_config['tags']).strip('[]').split(','))
         )
 
         if self._dizmo_config['elements_version'] != 'none':
