@@ -27,6 +27,33 @@ class Dizmo:
         if sys.platform.startswith('darwin'):
             self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'dizmo', 'InstalledDizmos')
 
+        self._categories = [
+            'books_and_references',
+            'comics',
+            'communication',
+            'education',
+            'entertainment',
+            'finance',
+            'games',
+            'health_and_fitness',
+            'libraries_and_demo',
+            'lifestyle',
+            'media_and_video',
+            'medical',
+            'music_and_audio',
+            'news_and_magazines',
+            'personalization',
+            'photography',
+            'productivity',
+            'shopping',
+            'social',
+            'sports',
+            'tools',
+            'transportation',
+            'travel_and_local',
+            'weather'
+        ]
+
     def skeleton_path(self):
         try:
             skeleton = resource_filename(__name__, os.path.join('skeleton', 'dizmo'))
@@ -112,7 +139,21 @@ class Dizmo:
                     raise WrongFormatError('The description has to consist of at least one character.')
 
         if 'tags' not in self._dizmo_config:
-            self._dizmo_config['tags'] = []
+            raise MissingKeyError('Add a list of tags in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['tags'], list):
+                raise WrongFormatError('The tags need to be a list ["...", "..."].')
+
+        if 'category' not in self._dizmo_config:
+            raise MissingKeyError('Add a category in your config file under `dizmo_settings`.')
+        else:
+            if not isinstance(self._dizmo_config['category'], unicode):
+                raise WrongFormatError('The category needs to be a unicode string.')
+            else:
+                if len(self._dizmo_config['category']) == 0:
+                    raise WrongFormatError('The category has to consist of at least one character.')
+                if self._dizmo_config['category'] not in self._categories:
+                    raise WrongFormatError('The category has to be one of the following: "books_and_references", "comics", "communication", "education", "entertainment", "finance", "games", "health_and_fitness", "libraries_and_demo", "lifestyle", "media_and_video", "medical", "music_and_audio", "news_and_magazines", "personalization", "photography", "productivity", "shopping", "social", "sports", "tools", "transportation", "travel_and_local", "weather"')
 
         if 'min_space_version' not in self._dizmo_config:
             raise MissingKeyError('Add a min_space_version in your config file under `dizmo_settings`.')
@@ -165,22 +206,23 @@ class Dizmo:
             identifier = self._dizmo_config['bundle_identifier']
 
         plist = dict(
-            bundleDisplayName=display_name,
-            bundleIdentifier=identifier,
-            bundleName=self._dizmo_config['bundle_name'],
-            bundleShortVersionString=self._config['version'],
-            bundleVersion=self._config['version'],
+            BundleDisplayName=display_name,
+            BundleIdentifier=identifier,
+            BundleName=self._dizmo_config['bundle_name'],
+            BundleShortVersionString=self._config['version'],
+            BundleVersion=self._config['version'],
             CloseBoxInsetX=self._dizmo_config['box_inset_x'],
             CloseBoxInsetY=self._dizmo_config['box_inset_y'],
             MainHTML=self._dizmo_config['main_html'],
             Width=self._dizmo_config['width'],
             Height=self._dizmo_config['height'],
-            apiVersion=self._dizmo_config['api_version'],
+            ApiVersion=self._dizmo_config['api_version'],
             ElementsVersion=self._dizmo_config['elements_version'],
             Description=self._dizmo_config['description'],
             ChangeLog=self._dizmo_config['change_log'],
             MinSpaceVersion=self._dizmo_config['min_space_version'],
-            Tags=self._dizmo_config['tags']
+            Tags=self._dizmo_config['tags'],
+            Category=self._dizmo_config['category']
         )
 
         if self._dizmo_config['elements_version'] != 'none':
