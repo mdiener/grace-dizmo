@@ -6,6 +6,11 @@ Install
 
 Installing grace-dizmo can be done the same way as **Grace** (https://github.com/mdiener/grace). You do not need to install **Grace** first, as it will be automatically installed as a dependency. You can also grab an executable from http://www.webdiener.ch/grace for Windows, which includes both **Grace** and the dizmo plugin already.
 
+License
+-------
+
+Grace is released under a GPL license. You can read the full license in the attached LICENSE.txt file.
+
 General
 -------
 
