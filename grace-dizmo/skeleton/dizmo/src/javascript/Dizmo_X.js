@@ -230,10 +230,6 @@ Class("##PROJECTNAME##.Dizmo", {
                 directional: false
             });
 
-            // Show front and hide back on first load
-            jQuery("#back").hide();
-            jQuery("#front").show();
-
             self.setAttributes();
             self.initEvents();
         }
@@ -315,8 +311,6 @@ Class("##PROJECTNAME##.Dizmo", {
 
             // Allow the resizing of the dizmo
             dizmo.setAttribute('allowResize', true);
-            dizmo.setAttribute('geometry/minHeight', 200);
-            dizmo.setAttribute('geometry/minWidth', 200);
         }
     }
 });
