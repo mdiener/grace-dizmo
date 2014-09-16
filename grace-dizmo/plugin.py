@@ -19,14 +19,6 @@ def get_path():
 
 class Dizmo:
     def __init__(self):
-        self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), '.local', 'share', 'data', 'dizmo', 'dizmo', 'InstalledDizmos')
-        if sys.platform.startswith('win32'):
-            userdir = os.path.expanduser('~user')[:-4]
-            self._dizmo_deployment_path = os.path.join(userdir, 'dizmo', 'dizmo', 'InstalledDizmos')
-            self._dizmo_deployment_path = self._dizmo_deployment_path.replace('\\', '\\\\')
-        if sys.platform.startswith('darwin'):
-            self._dizmo_deployment_path = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'dizmo', 'InstalledDizmos')
-
         self._categories = [
             'books_and_references',
             'comics',
@@ -62,8 +54,10 @@ class Dizmo:
 
         return skeleton
 
-    def pass_config(self, config):
+    def pass_config(self, global_config, config):
         self._config = config
+        self._global_config = global_config
+
         try:
             self._check_config()
         except:
@@ -73,6 +67,22 @@ class Dizmo:
         self._bundle_name = self._bundle_name[len(self._bundle_name) - 1]
 
     def _check_config(self):
+        if 'deployment_path' not in self._config:
+            if 'deployment_path' not in self._global_config:
+                raise MissingKeyError('Could not find deployment path in config file.')
+            else:
+                self._deployment_path = self._global_config['deployment_path']
+        else:
+            self._deployment_path = self._config['deployment_path']
+
+        if 'zip_path' not in self._config:
+            if 'zip_path' not in self._global_config:
+                self._zip_path = None
+            else:
+                self._zip_path = os.path.join(self._global_config['zip_path'])
+        else:
+            self._zip_path = os.path.join(self._config['zip_path'])
+
         if 'dizmo_settings' not in self._config:
             raise MissingKeyError('Could not find settings for dizmo.')
 
@@ -277,18 +287,13 @@ class Dizmo:
         except:
             print 'Could not find an icon for your dizmo. You should consider placing a `Icon.png` in your root folder.'
 
-    def new_replace_line(self, line):
-        line = line.replace('##DIZMODEPLOYMENTPATH##', self._dizmo_deployment_path)
-
-        return line
-
     def after_deploy(self, testname):
         if self._config['test']:
-            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'].lower() + '.' + testname.lower())
-            source = os.path.join(self._config['deployment_path'], self._config['name'] + '_' + testname)
+            dest = os.path.join(self._deployment_path, self._dizmo_config['bundle_identifier'].lower() + '.' + testname.lower())
+            source = os.path.join(self._deployment_path, self._config['name'] + '_' + testname)
         elif self._config['build']:
-            dest = os.path.join(self._config['deployment_path'], self._dizmo_config['bundle_identifier'].lower())
-            source = os.path.join(self._config['deployment_path'], self._config['name'])
+            dest = os.path.join(self._deployment_path, self._dizmo_config['bundle_identifier'].lower())
+            source = os.path.join(self._deployment_path, self._config['name'])
         else:
             raise MissingKeyError()
 
@@ -325,9 +330,9 @@ class Dizmo:
         except:
             raise
 
-        if 'zip_path' in self._config:
-            source = os.path.join(self._config['zip_path'], name + '_v' + self._config['version'] + '.zip')
-            dest = os.path.join(self._config['zip_path'], name + '_v' + self._config['version'] + '.dzm')
+        if self._zip_path is not None:
+            source = os.path.join(self._zip_path, name + '_v' + self._config['version'] + '.zip')
+            dest = os.path.join(self._zip_path, name + '_v' + self._config['version'] + '.dzm')
 
             try:
                 self._move_zip(source, dest)
