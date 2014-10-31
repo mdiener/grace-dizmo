@@ -352,6 +352,50 @@ class Dizmo:
             raise FileNotWritableError('Could not move the zip target to the dizmo path.')
 
 
+class Task:
+    def __init__(self, task):
+        self._tasks = ['upload', 'publish', 'unpublish']
+
+        if task not in self._tasks:
+            raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + task)
+
+        self._task = task
+
+    def pass_config(self, config):
+        self._config = config
+
+        try:
+            self._check_config()
+        except:
+            raise
+
+    def _check_config(self):
+        if 'dizmoid' not in self._config:
+            raise MissingKeyError('Your dizmoid must be provided in the config file (either globally or locally).')
+        if 'email' not in self._config:
+            raise MissingKeyError('Your email must be provided in the config file (either globally or locally).')
+
+    def execute(self):
+        if self._task == 'publish':
+            self._execute_publish()
+        if self._task == 'unpublish':
+            self._execute_unpublish()
+        if self._task == 'upload':
+            self._execute_upload()
+
+    def _execute_upload(self):
+        # ToDo upload function
+        pass
+
+    def _execute_unpublish(self):
+        # ToDo unpublish function
+        pass
+
+    def _execute_publish(self):
+        # ToDo publish function
+        pass
+
+
 class Error(Exception):
     def __init__(self, msg='', arg=None):
         if arg:
