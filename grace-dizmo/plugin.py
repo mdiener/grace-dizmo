@@ -246,30 +246,44 @@ class Dizmo:
     def after_build(self):
         plist = self._get_plist()
         path = self._config['build_path']
-        imagePNGSource = os.path.join(os.getcwd(), 'Icon.png')
-        imageSVGSource = os.path.join(os.getcwd(), 'Icon.svg')
-        imagePreviewSource = os.path.join(os.getcwd(), 'Preview.png')
+        image_PNG_source = os.path.join(os.getcwd(), 'Icon.png')
+        image_PNG_dark_source = os.path.join(os.getcwd(), 'Icon-dark.png')
+        image_SVG_source = os.path.join(os.getcwd(), 'Icon.svg')
+        image_SVG_dark_source = os.path.join(os.getcwd(), 'Icon-dark.svg')
+        image_preview_source = os.path.join(os.getcwd(), 'Preview.png')
 
         try:
             plistlib.writePlist(plist, os.path.join(path, 'Info.plist'))
         except:
             raise FileNotWritableError('Could not write plist to target location: ', path)
 
-        if os.path.isfile(imagePNGSource):
+        if os.path.isfile(image_PNG_source):
             try:
-                copy(imagePNGSource, os.path.join(path, 'Icon.png'))
+                copy(image_PNG_source, os.path.join(path, 'Icon.png'))
             except:
                 print 'Could not copy your Icon.png file.'
 
-        if os.path.isfile(imageSVGSource):
+        if os.path.isfile(image_PNG_dark_source):
             try:
-                copy(imageSVGSource, os.path.join(path, 'Icon.svg'))
+                copy(image_PNG_dark_source, os.path.join(path, 'Icon-dark.png'))
+            except:
+                print 'Could not copy your Icon-dark.png file.'
+
+        if os.path.isfile(image_SVG_source):
+            try:
+                copy(image_SVG_source, os.path.join(path, 'Icon.svg'))
             except:
                 print 'Could not copy your Icon.svg file.'
 
-        if os.path.isfile(imagePreviewSource):
+        if os.path.isfile(image_SVG_dark_source):
             try:
-                copy(imagePreviewSource, os.path.join(path, 'Preview.png'))
+                copy(image_SVG_dark_source, os.path.join(path, 'Icon-dark.svg'))
+            except:
+                print 'Could not copy your Icon-dark.svg file.'
+
+        if os.path.isfile(image_preview_source):
+            try:
+                copy(image_preview_source, os.path.join(path, 'Preview.png'))
             except:
                 print 'Could not copy your Preview.png file.'
 
