@@ -3,6 +3,12 @@ import plistlib
 from shutil import move, rmtree, copy
 import sys
 from pkg_resources import resource_filename
+from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError
+import grace.create
+import grace.build
+import grace.testit
+import grace.zipit
+import grace.deploy
 
 
 def we_are_frozen():
@@ -17,8 +23,47 @@ def get_path():
     return os.path.dirname(unicode(__file__, encoding))
 
 
-class Dizmo:
-    def __init__(self):
+def get_plist(config, testname=None, test=False):
+    if test:
+        display_name = config['dizmo_settings']['display_name'] + ' ' + testname
+        identifier = config['dizmo_settings']['bundle_identifier'] + '.' + testname.lower()
+    else:
+        display_name = config['dizmo_settings']['display_name']
+        identifier = config['dizmo_settings']['bundle_identifier']
+
+    plist = dict(
+        BundleDisplayName=display_name,
+        BundleIdentifier=identifier,
+        BundleName=config['dizmo_settings']['bundle_name'],
+        BundleShortVersionString=config['version'],
+        BundleVersion=config['version'],
+        CloseBoxInsetX=config['dizmo_settings']['box_inset_x'],
+        CloseBoxInsetY=config['dizmo_settings']['box_inset_y'],
+        MainHTML=config['dizmo_settings']['main_html'],
+        Width=config['dizmo_settings']['width'],
+        Height=config['dizmo_settings']['height'],
+        ApiVersion=config['dizmo_settings']['api_version'],
+        ElementsVersion=config['dizmo_settings']['elements_version'],
+        Description=config['dizmo_settings']['description'],
+        ChangeLog=config['dizmo_settings']['change_log'],
+        MinSpaceVersion=config['dizmo_settings']['min_space_version'],
+        Tags=config['dizmo_settings']['tags'],
+        Category=config['dizmo_settings']['category']
+    )
+
+    if config['dizmo_settings']['elements_version'] != 'none':
+        plist['ElementsVersion'] = config['dizmo_settings']['elements_version']
+
+    if config['dizmo_settings']['hidden_dizmo']:
+        plist['hiddenDizmo'] = config['dizmo_settings']['hidden_dizmo']
+
+    return plist
+
+
+class Config:
+    def __init__(self, config):
+        self._config = config
+
         self._categories = [
             'books_and_references',
             'comics',
@@ -46,43 +91,12 @@ class Dizmo:
             'weather'
         ]
 
-    def skeleton_path(self):
-        try:
-            skeleton = resource_filename(__name__, os.path.join('skeleton', 'dizmo'))
-        except NotImplementedError:
-            skeleton = os.path.join(sys.prefix, 'skeleton', 'dizmo')
-
-        return skeleton
-
-    def pass_config(self, global_config, config):
-        self._config = config
-        self._global_config = global_config
-
         try:
             self._check_config()
         except:
             raise
 
-        self._bundle_name = self._dizmo_config['bundle_identifier'].split('.')
-        self._bundle_name = self._bundle_name[len(self._bundle_name) - 1]
-
     def _check_config(self):
-        if 'deployment_path' not in self._config:
-            if 'deployment_path' not in self._global_config:
-                raise MissingKeyError('Could not find deployment path in config file.')
-            else:
-                self._deployment_path = self._global_config['deployment_path']
-        else:
-            self._deployment_path = self._config['deployment_path']
-
-        if 'zip_path' not in self._config:
-            if 'zip_path' not in self._global_config:
-                self._zip_path = None
-            else:
-                self._zip_path = os.path.join(self._global_config['zip_path'])
-        else:
-            self._zip_path = os.path.join(self._config['zip_path'])
-
         if 'dizmo_settings' not in self._config:
             raise MissingKeyError('Could not find settings for dizmo.')
 
@@ -202,49 +216,40 @@ class Dizmo:
                     raise WrongFormatError('The main_html has to consist of at least one character.')
 
         if 'hidden_dizmo' not in self._dizmo_config:
-            self._dizmo_config['hidden_dizmo'] = False
+            self._config['dizmo_settings']['hidden_dizmo'] = False
 
         if 'elements_version' not in self._dizmo_config:
-            self._dizmo_config['elements_version'] = 'none'
+            self._config['dizmo_settings']['elements_version'] = 'none'
 
-    def _get_plist(self, testname=None, test=False):
-        if test:
-            display_name = self._dizmo_config['display_name'] + ' ' + testname
-            identifier = self._dizmo_config['bundle_identifier'] + '.' + testname.lower()
-        else:
-            display_name = self._dizmo_config['display_name']
-            identifier = self._dizmo_config['bundle_identifier']
+    def get_config(self):
+        return self._config
 
-        plist = dict(
-            BundleDisplayName=display_name,
-            BundleIdentifier=identifier,
-            BundleName=self._dizmo_config['bundle_name'],
-            BundleShortVersionString=self._config['version'],
-            BundleVersion=self._config['version'],
-            CloseBoxInsetX=self._dizmo_config['box_inset_x'],
-            CloseBoxInsetY=self._dizmo_config['box_inset_y'],
-            MainHTML=self._dizmo_config['main_html'],
-            Width=self._dizmo_config['width'],
-            Height=self._dizmo_config['height'],
-            ApiVersion=self._dizmo_config['api_version'],
-            ElementsVersion=self._dizmo_config['elements_version'],
-            Description=self._dizmo_config['description'],
-            ChangeLog=self._dizmo_config['change_log'],
-            MinSpaceVersion=self._dizmo_config['min_space_version'],
-            Tags=self._dizmo_config['tags'],
-            Category=self._dizmo_config['category']
-        )
 
-        if self._dizmo_config['elements_version'] != 'none':
-            plist['ElementsVersion'] = self._dizmo_config['elements_version']
+class New(grace.create.New):
+    def __init__(self, projectName):
+        self._projectName = projectName
+        self._root = get_path()
+        self._cwd = os.getcwd()
 
-        if self._dizmo_config['hidden_dizmo']:
-            plist['hiddenDizmo'] = self._dizmo_config['hidden_dizmo']
+        try:
+            self._skeleton_path = resource_filename(__name__, os.path.join('skeleton', 'dizmo'))
+        except NotImplementedError:
+            self._skeleton_path = os.path.join(sys.prefix, 'skeleton', 'dizmo')
 
-        return plist
+        self._projectPath = os.path.join(self._cwd, self._projectName)
 
-    def after_build(self):
-        plist = self._get_plist()
+        self._copy_structure()
+        self._replace_strings()
+
+
+class Build(grace.build.Build):
+    def __init__(self, config):
+        super(Build, self).__init__(config)
+
+    def run(self):
+        super(Build, self).run()
+
+        plist = get_plist(self._config)
         path = self._config['build_path']
         imagePNGSource = os.path.join(os.getcwd(), 'Icon.png')
         imageSVGSource = os.path.join(os.getcwd(), 'Icon.svg')
@@ -273,8 +278,15 @@ class Dizmo:
             except:
                 print 'Could not copy your Preview.png file.'
 
-    def after_test(self, testname):
-        plist = self._get_plist(testname, test=True)
+
+class Test(grace.testit.Test):
+    def __init__(self, config):
+        super(Test, self).__init__(config)
+
+    def run(self, testname):
+        super(Test, self).run(testname)
+
+        plist = get_plist(self._config, testname, test=True)
         path = os.path.join(os.getcwd(), 'build', self._config['name'] + '_' + testname)
 
         try:
@@ -287,20 +299,24 @@ class Dizmo:
         except:
             print 'Could not find an icon for your dizmo. You should consider placing a `Icon.png` in your root folder.'
 
-    def after_deploy(self, testname):
+
+class Deploy(grace.deploy.Deploy):
+    def __init__(self, config):
+        super(Deploy, self).__init__(config)
+
+    def run(self, testname):
+        super(Deploy, self).run(testname)
+
         if self._config['test']:
-            dest = os.path.join(self._deployment_path, self._dizmo_config['bundle_identifier'].lower() + '.' + testname.lower())
+            dest = os.path.join(self._deployment_path, self._config['dizmo_settings']['bundle_identifier'].lower() + '.' + testname.lower())
             source = os.path.join(self._deployment_path, self._config['name'] + '_' + testname)
         elif self._config['build']:
-            dest = os.path.join(self._deployment_path, self._dizmo_config['bundle_identifier'].lower())
+            dest = os.path.join(self._deployment_path, self._config['dizmo_settings']['bundle_identifier'].lower())
             source = os.path.join(self._deployment_path, self._config['name'])
         else:
             raise MissingKeyError()
 
-        try:
-            self._move_deploy(source, dest)
-        except:
-            raise
+        self._move_deploy(source, dest)
 
     def _move_deploy(self, source, dest):
         if os.path.exists(dest):
@@ -314,7 +330,14 @@ class Dizmo:
         except:
             raise FileNotWritableError('Could not move the deploy target to the dizmo path.')
 
-    def after_zip(self, testname):
+
+class Zip(grace.zipit.Zip):
+    def __init__(self, config):
+        super(Zip, self).__init__(config)
+
+    def run(self, testname):
+        super(Zip, self).run(testname)
+
         if self._config['test']:
             name = self._config['name'] + '_' + testname
         elif self._config['build']:
@@ -352,40 +375,38 @@ class Dizmo:
             raise FileNotWritableError('Could not move the zip target to the dizmo path.')
 
 
-class Task:
-    def __init__(self, task):
-        self._tasks = ['upload', 'publish', 'unpublish']
-
-        if task not in self._tasks:
-            raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + task)
-
-        self._task = task
-
-    def pass_config(self, config):
-        self._config = config
+class Task(grace.task.Task):
+    def __init__(self, tasks, config, module):
+        self._tasks = ['publish', 'unpublish']
+        self._task = None
 
         try:
-            self._check_config()
-        except:
-            raise
+            super(Task, self).__init__(tasks, config, module)
+            return
+        except UnknownCommandError as e:
+            if task not in self._tasks:
+                raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + task)
+
+        self._task = task
+        self._check_config()
 
     def _check_config(self):
         if 'dizmoid' not in self._config:
-            raise MissingKeyError('Your dizmoid must be provided in the config file (either globally or locally).')
+            if 'dizmoid' not in self._global_config:
+                raise MissingKeyError('Your dizmoid must be provided in the config file (either globally or locally).')
         if 'email' not in self._config:
-            raise MissingKeyError('Your email must be provided in the config file (either globally or locally).')
+            if 'email' not in self._global_config:
+                raise MissingKeyError('Your email must be provided in the config file (either globally or locally).')
 
     def execute(self):
         if self._task == 'publish':
             self._execute_publish()
+            return
         if self._task == 'unpublish':
             self._execute_unpublish()
-        if self._task == 'upload':
-            self._execute_upload()
+            return
 
-    def _execute_upload(self):
-        # ToDo upload function
-        pass
+        super(Task, self).execute()
 
     def _execute_unpublish(self):
         # ToDo unpublish function
@@ -394,30 +415,3 @@ class Task:
     def _execute_publish(self):
         # ToDo publish function
         pass
-
-
-class Error(Exception):
-    def __init__(self, msg='', arg=None):
-        if arg:
-            self.msg = msg + arg
-        else:
-            self.msg = msg
-
-    def __repr__(self):
-        return self.msg
-
-
-class FileNotWritableError(Error):
-    pass
-
-
-class RemoveFolderError(Error):
-    pass
-
-
-class MissingKeyError(Error):
-    pass
-
-
-class WrongFormatError(Error):
-    pass
