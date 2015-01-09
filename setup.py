@@ -22,7 +22,7 @@ setup(
     version='0.2.4',
     license='LICENSE.txt',
     packages=['grace-dizmo'],
-    install_requires=['grace>=0.3.9', 'setuptools'],
+    install_requires=['grace>=0.3.10', 'setuptools', 'requests', 'getpass', 'json'],
     package_data=package_data,
     keywords='toolchain javascript dizmo js buildtool',
     long_description=open('README.txt').read(),
