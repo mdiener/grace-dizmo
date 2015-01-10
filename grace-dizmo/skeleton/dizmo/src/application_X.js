@@ -18,7 +18,7 @@ function showFront() {
 // Helper object to attach all the events to
 var events = {};
 
-// As soon as the dom is loaded, call instantiate the main class
-jQuery(document).ready(function() {
+// As soon as the dom is loaded, and the dizmo is ready, instantiate the main class
+window.document.addEventListener('dizmoready', function() {
     new ##PROJECTNAME##.Main();
 });

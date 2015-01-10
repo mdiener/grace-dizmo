@@ -3,6 +3,15 @@ import plistlib
 from shutil import move, rmtree, copy
 import sys
 from pkg_resources import resource_filename
+from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials
+import grace.create
+import grace.build
+import grace.testit
+import grace.zipit
+import grace.deploy
+import requests
+import getpass
+import json
 
 
 def we_are_frozen():
@@ -17,8 +26,47 @@ def get_path():
     return os.path.dirname(unicode(__file__, encoding))
 
 
-class Dizmo:
-    def __init__(self):
+def get_plist(config, testname=None, test=False):
+    if test:
+        display_name = config['dizmo_settings']['display_name'] + ' ' + testname
+        identifier = config['dizmo_settings']['bundle_identifier'] + '.' + testname.lower()
+    else:
+        display_name = config['dizmo_settings']['display_name']
+        identifier = config['dizmo_settings']['bundle_identifier']
+
+    plist = dict(
+        BundleDisplayName=display_name,
+        BundleIdentifier=identifier,
+        BundleName=config['dizmo_settings']['bundle_name'],
+        BundleShortVersionString=config['version'],
+        BundleVersion=config['version'],
+        CloseBoxInsetX=config['dizmo_settings']['box_inset_x'],
+        CloseBoxInsetY=config['dizmo_settings']['box_inset_y'],
+        MainHTML=config['dizmo_settings']['main_html'],
+        Width=config['dizmo_settings']['width'],
+        Height=config['dizmo_settings']['height'],
+        ApiVersion=config['dizmo_settings']['api_version'],
+        ElementsVersion=config['dizmo_settings']['elements_version'],
+        Description=config['dizmo_settings']['description'],
+        ChangeLog=config['dizmo_settings']['change_log'],
+        MinSpaceVersion=config['dizmo_settings']['min_space_version'],
+        Tags=config['dizmo_settings']['tags'],
+        Category=config['dizmo_settings']['category']
+    )
+
+    if config['dizmo_settings']['elements_version'] != 'none':
+        plist['ElementsVersion'] = config['dizmo_settings']['elements_version']
+
+    if config['dizmo_settings']['hidden_dizmo']:
+        plist['hiddenDizmo'] = config['dizmo_settings']['hidden_dizmo']
+
+    return plist
+
+
+class Config:
+    def __init__(self, config):
+        self._config = config
+
         self._categories = [
             'books_and_references',
             'comics',
@@ -46,43 +94,12 @@ class Dizmo:
             'weather'
         ]
 
-    def skeleton_path(self):
-        try:
-            skeleton = resource_filename(__name__, os.path.join('skeleton', 'dizmo'))
-        except NotImplementedError:
-            skeleton = os.path.join(sys.prefix, 'skeleton', 'dizmo')
-
-        return skeleton
-
-    def pass_config(self, global_config, config):
-        self._config = config
-        self._global_config = global_config
-
         try:
             self._check_config()
         except:
             raise
 
-        self._bundle_name = self._dizmo_config['bundle_identifier'].split('.')
-        self._bundle_name = self._bundle_name[len(self._bundle_name) - 1]
-
     def _check_config(self):
-        if 'deployment_path' not in self._config:
-            if 'deployment_path' not in self._global_config:
-                raise MissingKeyError('Could not find deployment path in config file.')
-            else:
-                self._deployment_path = self._global_config['deployment_path']
-        else:
-            self._deployment_path = self._config['deployment_path']
-
-        if 'zip_path' not in self._config:
-            if 'zip_path' not in self._global_config:
-                self._zip_path = None
-            else:
-                self._zip_path = os.path.join(self._global_config['zip_path'])
-        else:
-            self._zip_path = os.path.join(self._config['zip_path'])
-
         if 'dizmo_settings' not in self._config:
             raise MissingKeyError('Could not find settings for dizmo.')
 
@@ -202,49 +219,40 @@ class Dizmo:
                     raise WrongFormatError('The main_html has to consist of at least one character.')
 
         if 'hidden_dizmo' not in self._dizmo_config:
-            self._dizmo_config['hidden_dizmo'] = False
+            self._config['dizmo_settings']['hidden_dizmo'] = False
 
         if 'elements_version' not in self._dizmo_config:
-            self._dizmo_config['elements_version'] = 'none'
+            self._config['dizmo_settings']['elements_version'] = 'none'
 
-    def _get_plist(self, testname=None, test=False):
-        if test:
-            display_name = self._dizmo_config['display_name'] + ' ' + testname
-            identifier = self._dizmo_config['bundle_identifier'] + '.' + testname.lower()
-        else:
-            display_name = self._dizmo_config['display_name']
-            identifier = self._dizmo_config['bundle_identifier']
+    def get_config(self):
+        return self._config
 
-        plist = dict(
-            BundleDisplayName=display_name,
-            BundleIdentifier=identifier,
-            BundleName=self._dizmo_config['bundle_name'],
-            BundleShortVersionString=self._config['version'],
-            BundleVersion=self._config['version'],
-            CloseBoxInsetX=self._dizmo_config['box_inset_x'],
-            CloseBoxInsetY=self._dizmo_config['box_inset_y'],
-            MainHTML=self._dizmo_config['main_html'],
-            Width=self._dizmo_config['width'],
-            Height=self._dizmo_config['height'],
-            ApiVersion=self._dizmo_config['api_version'],
-            ElementsVersion=self._dizmo_config['elements_version'],
-            Description=self._dizmo_config['description'],
-            ChangeLog=self._dizmo_config['change_log'],
-            MinSpaceVersion=self._dizmo_config['min_space_version'],
-            Tags=self._dizmo_config['tags'],
-            Category=self._dizmo_config['category']
-        )
 
-        if self._dizmo_config['elements_version'] != 'none':
-            plist['ElementsVersion'] = self._dizmo_config['elements_version']
+class New(grace.create.New):
+    def __init__(self, projectName):
+        self._projectName = projectName
+        self._root = get_path()
+        self._cwd = os.getcwd()
 
-        if self._dizmo_config['hidden_dizmo']:
-            plist['hiddenDizmo'] = self._dizmo_config['hidden_dizmo']
+        try:
+            self._skeleton_path = resource_filename(__name__, os.path.join('skeleton', 'dizmo'))
+        except NotImplementedError:
+            self._skeleton_path = os.path.join(sys.prefix, 'skeleton', 'dizmo')
 
-        return plist
+        self._projectPath = os.path.join(self._cwd, self._projectName)
 
-    def after_build(self):
-        plist = self._get_plist()
+        self._copy_structure()
+        self._replace_strings()
+
+
+class Build(grace.build.Build):
+    def __init__(self, config):
+        super(Build, self).__init__(config)
+
+    def run(self):
+        super(Build, self).run()
+
+        plist = get_plist(self._config)
         path = self._config['build_path']
         image_PNG_source = os.path.join(os.getcwd(), 'Icon.png')
         image_PNG_dark_source = os.path.join(os.getcwd(), 'Icon-dark.png')
@@ -287,8 +295,15 @@ class Dizmo:
             except:
                 print 'Could not copy your Preview.png file.'
 
-    def after_test(self, testname):
-        plist = self._get_plist(testname, test=True)
+
+class Test(grace.testit.Test):
+    def __init__(self, config):
+        super(Test, self).__init__(config)
+
+    def run(self, testname):
+        super(Test, self).run(testname)
+
+        plist = get_plist(self._config, testname, test=True)
         path = os.path.join(os.getcwd(), 'build', self._config['name'] + '_' + testname)
 
         try:
@@ -301,20 +316,24 @@ class Dizmo:
         except:
             print 'Could not find an icon for your dizmo. You should consider placing a `Icon.png` in your root folder.'
 
-    def after_deploy(self, testname):
+
+class Deploy(grace.deploy.Deploy):
+    def __init__(self, config):
+        super(Deploy, self).__init__(config)
+
+    def run(self, testname):
+        super(Deploy, self).run(testname)
+
         if self._config['test']:
-            dest = os.path.join(self._deployment_path, self._dizmo_config['bundle_identifier'].lower() + '.' + testname.lower())
+            dest = os.path.join(self._deployment_path, self._config['dizmo_settings']['bundle_identifier'].lower() + '.' + testname.lower())
             source = os.path.join(self._deployment_path, self._config['name'] + '_' + testname)
         elif self._config['build']:
-            dest = os.path.join(self._deployment_path, self._dizmo_config['bundle_identifier'].lower())
+            dest = os.path.join(self._deployment_path, self._config['dizmo_settings']['bundle_identifier'].lower())
             source = os.path.join(self._deployment_path, self._config['name'])
         else:
             raise MissingKeyError()
 
-        try:
-            self._move_deploy(source, dest)
-        except:
-            raise
+        self._move_deploy(source, dest)
 
     def _move_deploy(self, source, dest):
         if os.path.exists(dest):
@@ -328,7 +347,14 @@ class Dizmo:
         except:
             raise FileNotWritableError('Could not move the deploy target to the dizmo path.')
 
-    def after_zip(self, testname):
+
+class Zip(grace.zipit.Zip):
+    def __init__(self, config):
+        super(Zip, self).__init__(config)
+
+    def run(self, testname):
+        super(Zip, self).run(testname)
+
         if self._config['test']:
             name = self._config['name'] + '_' + testname
         elif self._config['build']:
@@ -366,28 +392,261 @@ class Dizmo:
             raise FileNotWritableError('Could not move the zip target to the dizmo path.')
 
 
-class Error(Exception):
-    def __init__(self, msg='', arg=None):
-        if arg:
-            self.msg = msg + arg
+class Upload(grace.upload.Upload):
+    def __init__(self, config):
+        self._cwd = os.getcwd()
+        self._root = get_path()
+        self._config = config
+        self._verify_ssl = False
+
+        self._check_config()
+
+        self._publish_latest_url = self._base_url + '/dizmo/' + self._dizmo_id + '/publish/latest'
+        self._login_url = self._base_url + '/oauth/login'
+        self._upload_url = self._base_url + '/dizmo'
+        self._upload_url_existing = self._base_url + '/dizmo/' + self._version
+
+        self._zip_name = self._config['name'] + '_v' + self._config['version'] + '.dzm'
+        self._zip_path = os.path.join(self._cwd, 'build', self._zip_name)
+
+    def _check_config(self):
+        if 'urls' not in self._config['dizmo_settings']:
+            if 'urls' not in self._config:
+                raise MissingKeyError('Could not find the urls key in either the global or local config file.')
+
+        if 'dizmo_store' not in self._config['dizmo_settings']['urls']:
+            if 'dizmo_store' not in self._config['urls']:
+                raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
+            else:
+                self._base_url = self._config['urls']['dizmo_store']
         else:
-            self.msg = msg
+            self._base_url = self._config['dizmo_settings']['urls']['dizmo_store']
 
-    def __repr__(self):
-        return self.msg
+        if 'bundle_identifier' not in self._config['dizmo_settings']:
+            raise MissingKeyError('Could not find the bundle_identifier in your configuration file.')
+        else:
+            self._dizmo_id = self._config['dizmo_settings']['bundle_identifier']
+
+        if 'version' not in self._config:
+            raise MissingKeyError('Could not find version in your configuration file.')
+        else:
+            self._version = self._config['version']
+
+        if 'credentials' not in self._config['dizmo_settings']:
+            if 'credentials' not in self._config:
+                self._username = ''
+                self._password = ''
+        else:
+            if 'username' in self._config['dizmo_settings']['credentials']:
+                self._username = self._config['dizmo_settings']['credentials']['username'].encode()
+            else:
+                if 'username' in self._config['credentials']:
+                    self._username = self._config['credentials']['username'].encode()
+                else:
+                    self._username = ''
+
+            if 'password' in self._config['dizmo_settings']['credentials']:
+                self._password = self._config['dizmo_settings']['credentials']['password'].encode()
+            else:
+                if 'password' in self._config['credentials']:
+                    self._password = self._config['credentials']['password'].encode()
+                else:
+                    self._password = ''
+
+    def _login_response(self, r):
+        if r.status_code != 200:
+            raise WrongLoginCredentials('Could not log in with the given credentials.')
+
+        r = requests.get(self._publish_latest_url,
+            cookies=self._cookies,
+            verify=self._verify_ssl
+        )
+
+        self._dizmo_exist_check_response(r)
+
+    def _dizmo_exist_check_response(self, r):
+        if r.status_code == 404:
+            self._upload()
+
+        if r.status_code == 401:
+            print('User is not authenticated. Please try again!')
+
+        if r.status_code == 403:
+            print('Your are not the owner of the dizmo, thus you can not access the dizmo on the server.')
+
+        if r.status_code == 200:
+            self._upload_existing()
+
+    def _upload_existing(self):
+        if not os.path.exists(self._zip_path):
+            raise FileNotFoundError('Could not find the zip file. Please check if "' + self._zip_path + '" exists.')
+
+        try:
+            zip_file = open(self._zip_path, 'r')
+        except:
+            raise GeneralError('Something went wrong while opening the zip file. Please try again.')
+
+        r = requests.put(self._upload_url_existing,
+            files={'file': zip_file},
+            cookies=self._cookies,
+            verify=self._verify_ssl
+        )
+
+        self._upload_response(r)
 
 
-class FileNotWritableError(Error):
-    pass
+class Task(grace.task.Task):
+    def __init__(self, tasks, config, module):
+        self._available_tasks = ['publish', 'unpublish', 'publish:display']
+        self._task = tasks[0]
+        self._verify_ssl = False
 
+        try:
+            super(Task, self).__init__(tasks, config, module)
+            return
+        except UnknownCommandError as e:
+            if self._task not in self._available_tasks:
+                raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + self._task)
 
-class RemoveFolderError(Error):
-    pass
+    def execute(self):
+        if self._task not in self._available_tasks:
+            super(Task, self).execute()
+            return
 
+        self._check_config()
 
-class MissingKeyError(Error):
-    pass
+        self._publish_url = self._base_url + '/dizmo/' + self._dizmo_id + '/publish/' + self._version
+        self._publish_info_url = self._base_url + '/dizmo/' + self._dizmo_id + '/publish'
+        self._login_url = self._base_url + '/oauth/login'
 
+        self._login()
 
-class WrongFormatError(Error):
-    pass
+    def _check_config(self):
+        if 'bundle_identifier' not in self._config['dizmo_settings']:
+            raise MissingKeyError('Your bundle_identifier must be provided in the config file.')
+        else:
+            self._dizmo_id = self._config['dizmo_settings']['bundle_identifier']
+
+        if 'version' not in self._config:
+            raise MissingKeyError('You need to provide a version number for your dizmo in the configuration file.')
+        else:
+            self._version = self._config['version']
+
+        if 'urls' not in self._config['dizmo_settings']:
+            if 'urls' not in self._config:
+                raise MissingKeyError('Could not find the urls key in either the global or local config file.')
+
+        if 'dizmo_store' not in self._config['dizmo_settings']['urls']:
+            if 'dizmo_store' not in self._config['urls']:
+                raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
+            else:
+                self._base_url = self._config['urls']['dizmo_store']
+        else:
+            self._base_url = self._config['dizmo_settings']['urls']['dizmo_store']
+
+        if 'credentials' not in self._config['dizmo_settings']:
+            if 'credentials' not in self._config:
+                self._username = ''
+                self._password = ''
+        else:
+            if 'username' in self._config['dizmo_settings']['credentials']:
+                self._username = self._config['dizmo_settings']['credentials']['username'].encode()
+            else:
+                if 'username' in self._config['credentials']:
+                    self._username = self._config['credentials']['username'].encode()
+                else:
+                    self._username = ''
+
+            if 'password' in self._config['dizmo_settings']['credentials']:
+                self._password = self._config['dizmo_settings']['credentials']['password'].encode()
+            else:
+                if 'password' in self._config['credentials']:
+                    self._password = self._config['credentials']['password'].encode()
+                else:
+                    self._password = ''
+
+    def _login(self):
+        if self._username == '':
+            self._username = raw_input('Please provide the username for your upload server (or leave blank if none is required): ')
+
+        if self._password == '':
+            self._password = getpass.getpass('Please provide the password for your upload server (or leave blank if none is required): ')
+
+        data = {}
+
+        if self._username != '':
+            data['username'] = self._username
+        if self._password != '':
+            data['password'] = self._password
+
+        r = requests.post(self._login_url,
+            data=json.dumps(data),
+            headers={'Content-type': 'application/json'},
+            verify=self._verify_ssl
+        )
+
+        self._login_response(r)
+
+    def _login_response(self, r):
+        if r.status_code != 200:
+            raise WrongLoginCredentials('Could not log in with the given credentials.')
+
+        self._cookies = r.cookies
+
+        if self._task == 'publish:display':
+            self._access_publish_information()
+        if self._task == 'publish':
+            self._publish_dizmo()
+        if self._task == 'unpublish':
+            self._unpublish_dizmo()
+
+    def _publish_dizmo(self):
+        print('Publishing dizmo with id: ' + self._dizmo_id + ' and version: ' + self._config['version'])
+        self._execute_publish(True)
+
+    def _unpublish_dizmo(self):
+        print('Unpublishing dizmo with id: ' + self._dizmo_id + ' and version: ' + self._config['version'])
+        self._execute_publish(False)
+
+    def _execute_publish(self, state):
+        r = requests.put(self._publish_url,
+            data=json.dumps({'publish': state}),
+            headers={'Content-Type': 'application/json'},
+            cookies=self._cookies,
+            verify=self._verify_ssl
+        )
+
+        self._display_response(r)
+
+    def _access_publish_information(self):
+        r = requests.get(self._publish_info_url,
+            cookies=self._cookies,
+            verify=self._verify_ssl
+        )
+
+        self._display_response(r)
+
+    def _display_response(self, r, *args, **kwargs):
+        if r.status_code == 404:
+            print('The provided dizmo is with the id: ' + self._dizmo_id + ' can not be found on the server.')
+            return
+
+        if r.status_code == 401:
+            print('Not authenticated. Please execute command again.')
+            return
+
+        if r.status_code == 403:
+            print('You are not the owner of the dizmo, thus we can not display any information.')
+            return
+
+        if r.status_code != 200:
+            print('Could not access the publish list.')
+            return
+
+        if self._task == 'publish':
+            print('Successfully published the dizmo.')
+        if self._task == 'unpublish':
+            print('Successfully removed publish status.')
+        if self._task == 'publish:display':
+            print(r.text)
+
