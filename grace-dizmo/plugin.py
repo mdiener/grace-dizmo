@@ -3,7 +3,7 @@ import plistlib
 from shutil import move, rmtree, copy
 import sys
 from pkg_resources import resource_filename
-from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials
+from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials, FileUploadError
 import grace.create
 import grace.build
 import grace.testit
@@ -468,14 +468,11 @@ class Upload(grace.upload.Upload):
         if r.status_code == 404:
             self._upload()
 
-        if r.status_code == 401:
-            print('User is not authenticated. Please try again!')
-
-        if r.status_code == 403:
-            print('Your are not the owner of the dizmo, thus you can not access the dizmo on the server.')
-
         if r.status_code == 200:
             self._upload_existing()
+
+        response = json.loads(r.text)
+        raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
 
     def _upload_existing(self):
         if not os.path.exists(self._zip_path):
@@ -493,6 +490,11 @@ class Upload(grace.upload.Upload):
         )
 
         self._upload_response(r)
+
+    def _upload_response(self, r):
+        if r.status_code != 200 or r.status_code != 201:
+            response = json.loads(r.text)
+            raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
 
 
 class Task(grace.task.Task):
@@ -626,27 +628,14 @@ class Task(grace.task.Task):
 
         self._display_response(r)
 
-    def _display_response(self, r, *args, **kwargs):
-        if r.status_code == 404:
-            print('The provided dizmo is with the id: ' + self._dizmo_id + ' can not be found on the server.')
-            return
+    def _display_response(self, r):
+        if r.status_code == 200:
+            if self._task == 'publish':
+                print('Successfully published the dizmo.')
+            if self._task == 'unpublish':
+                print('Successfully removed publish status.')
+            if self._task == 'publish:display':
+                print(r.text)
 
-        if r.status_code == 401:
-            print('Not authenticated. Please execute command again.')
-            return
-
-        if r.status_code == 403:
-            print('You are not the owner of the dizmo, thus we can not display any information.')
-            return
-
-        if r.status_code != 200:
-            print('Could not access the publish list.')
-            return
-
-        if self._task == 'publish':
-            print('Successfully published the dizmo.')
-        if self._task == 'unpublish':
-            print('Successfully removed publish status.')
-        if self._task == 'publish:display':
-            print(r.text)
-
+        response = json.loads(r.text)
+        raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
