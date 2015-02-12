@@ -254,11 +254,28 @@ class Build(grace.build.Build):
 
         plist = get_plist(self._config)
         path = self._config['build_path']
+
+        assets_path = os.path.join(path, 'assets')
+
         image_PNG_source = os.path.join(os.getcwd(), 'Icon.png')
+        if not os.path.isfile(image_PNG_source):
+            image_PNG_source = os.path.join(assets_path, 'Icon.png')
+
         image_PNG_dark_source = os.path.join(os.getcwd(), 'Icon-dark.png')
+        if not os.path.isfile(image_PNG_dark_source):
+            image_PNG_dark_source = os.path.join(assets_path, 'Icon-dark.png')
+
         image_SVG_source = os.path.join(os.getcwd(), 'Icon.svg')
+        if not os.path.isfile(image_SVG_source):
+            image_SVG_source = os.path.join(assets_path, 'Icon.svg')
+
         image_SVG_dark_source = os.path.join(os.getcwd(), 'Icon-dark.svg')
+        if not os.path.isfile(image_SVG_dark_source):
+            image_SVG_dark_source = os.path.join(assets_path, 'Icon-dark.svg')
+
         image_preview_source = os.path.join(os.getcwd(), 'Preview.png')
+        if not os.path.isfile(image_preview_source):
+            image_preview_source = os.path.join(assets_path, 'Preview.png')
 
         try:
             plistlib.writePlist(plist, os.path.join(path, 'Info.plist'))
@@ -294,6 +311,12 @@ class Build(grace.build.Build):
                 copy(image_preview_source, os.path.join(path, 'Preview.png'))
             except:
                 print 'Could not copy your Preview.png file.'
+
+        if os.path.exists(assets_path):
+            try:
+                rmtree(assets_path)
+            except:
+                print ('Could not delete your assets folder in the build folder.')
 
 
 class Test(grace.testit.Test):
