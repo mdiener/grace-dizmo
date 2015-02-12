@@ -42,35 +42,7 @@ Class("##PROJECTNAME##.Dizmo", {
             load: function(path) {
                 var self = this;
 
-                var value = dizmo.privateStorage().getProperty(path);
-                return self.parseTreeValue(value);
-            },
-
-            parseTreeValue: function(value) {
-                if (value === '') {
-                    return value;
-                }
-
-                if (isFinite(value)) {
-                    return Number(value);
-                }
-
-                if (jQuery.type(value) === 'string') {
-                    if (value === 'true') {
-                        return true;
-                    }
-                    if (value === 'false') {
-                        return false;
-                    }
-
-                    try {
-                        return JSON.parse(value);
-                    } catch(e) {
-                        return decodeURIComponent(value);
-                    }
-                } else {
-                    return null;
-                }
+                return dizmo.privateStorage.getProperty(path);
             },
 
             /**
@@ -84,37 +56,7 @@ Class("##PROJECTNAME##.Dizmo", {
             save: function(path, value) {
                 var self = this;
 
-                if (jQuery.type(path) !== 'string') {
-                    console.log('You have to provide a string as a path.');
-                    return;
-                }
-
-                value = self.prepareValue(value);
-                if (jQuery.type(value) === 'null') {
-                    return;
-                }
-
-                dizmo.privateStorage().setProperty(path, value);
-            },
-
-            prepareValue: function(value) {
-                if (jQuery.type(value) === 'string') {
-                    value = encodeURIComponent(value);
-                } else if (jQuery.type(value) === 'number') {
-                    value = value.toString();
-                } else if (jQuery.type(value) === 'boolean') {
-                    value = value.toString();
-                } else if (jQuery.type(value) === 'object' || jQuery.type(value) === 'array') {
-                    value = JSON.stringify(value);
-                } else if (jQuery.type(value) === 'null') {
-                    console.log('To delete a value, please use the respecitve function.');
-                    return null;
-                } else {
-                    console.log('Please provide a value to save to ' + path + '.');
-                    return null;
-                }
-
-                return value;
+                dizmo.privateStorage.setProperty(path, value);
             },
 
             setTitle: function(value) {
@@ -148,7 +90,7 @@ Class("##PROJECTNAME##.Dizmo", {
                     return;
                 }
 
-                dizmo.publicStorage().setProperty(path, value);
+                dizmo.publicStorage.setProperty(path, value);
             },
 
             /**
@@ -162,7 +104,7 @@ Class("##PROJECTNAME##.Dizmo", {
                     path = 'stdout';
                 }
 
-                dizmo.publicStorage().deleteProperty(path);
+                dizmo.publicStorage.deleteProperty(path);
             },
 
             /**
@@ -213,7 +155,7 @@ Class("##PROJECTNAME##.Dizmo", {
             },
 
             unsubscribe: function(id) {
-                dizmo.privateStorage().unsubscribe(id);
+                dizmo.privateStorage.unsubscribe(id);
             }
         }
     },
@@ -225,10 +167,6 @@ Class("##PROJECTNAME##.Dizmo", {
          */
         initialize: function() {
             var self = this;
-
-            DizmoHelper.DockingManager.init({
-                directional: false
-            });
 
             self.setAttributes();
             self.initEvents();
@@ -267,34 +205,32 @@ Class("##PROJECTNAME##.Dizmo", {
             });
 
             // Subscribe to displayMode changes
-            viewer.subscribeToAttribute('displayMode', function(path, val, oldVal) {
+            viewer.subscribeToAttribute('settings/displaymode', function(path, val, oldVal) {
                 if (val === 'presentation') {
-                    dizmo.setAttribute('hideframe', true);
+                    dizmo.setAttribute('settings/state/titlebar', true);
                 } else {
-                    dizmo.setAttribute('hideframe', false);
+                    dizmo.setAttribute('settings/state/titlebar', false);
                 }
 
                 jQuery(events).trigger('dizmo.onmodechanged', [val]);
             });
 
-            // Registering the canDock event with the DockingManager. By default it is provided
-            // a false, meaning the dizmo can not be docked. Refer to the DockingManager documentation
-            // for more insight on the possible values.
-            DizmoHelper.DockingManager.canDock(false);
+            //Tell the dizmo space that this dizmo can be docked to other dizmos. You can also supply a function
+            //which gets the to be docked dizmo and has to return false or true if the dizmo can dock.
+            dizmo.canDock(false);
 
-            // Registering the onDock event with the DockingManager. Refer to the DockingManager documentation
-            // for more insight.
-            DizmoHelper.DockingManager.onDock(function(dockedDizmo, side) {
+            //If a dizmo is docked to this dizmo, the function provided to the onDock function is being called and receives
+            //the instance of the docked dizmo as a parameter.
+            dizmo.onDock(function(dockedDizmo) {
                 // Write code here that should happen when a dizmo has been docked.
                 // The line below is a small example on how to relay the event to other
                 // classes.
-                var allDockedDizmos = DizmoHelper.DockingManager.getDockedDizmos();
                 jQuery(events).trigger('dizmo.docked');
             });
 
-            // Registering the onUndock event with the DockingManager. Refer to the DockingManager documentation
-            // for more insight.
-            DizmoHelper.DockingManager.onUndock(function(undockedDizmo) {
+            // onUndock is called when a dizmo has been undocked from this dizmo. The provided function receives the undocked
+            // dizmo as a parameter.
+            dizmo.onUndock(function(undockedDizmo) {
                 // Write code here that should happen when a dizmo has been un-docked.
                 // The line below is a small example on how to relay the event to other
                 // classes.
@@ -310,7 +246,7 @@ Class("##PROJECTNAME##.Dizmo", {
             var self = this;
 
             // Allow the resizing of the dizmo
-            dizmo.setAttribute('allowResize', true);
+            dizmo.setAttribute('settings/usercontrols/allowresize', true);
         }
     }
 });
