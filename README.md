@@ -40,8 +40,8 @@ The following options should not be changed, unless you exactly know what you ar
 
 The special key *credentials* can be used to supply credentials to log in to the store and upload/publish/unpublish the dizmo. These keys can also be supplied through the global configuration file.
 * credentials
-** username: If left empty, grace will ask for it on executing the upload/publish/unpublish command
-** password: If left empty, grace will ask for it on executing the upload/publish/unpublish command
+  * username: If left empty, grace will ask for it on executing the upload/publish/unpublish command
+  * password: If left empty, grace will ask for it on executing the upload/publish/unpublish command
 
 JavaScript API wrapper class
 ----------------------------
