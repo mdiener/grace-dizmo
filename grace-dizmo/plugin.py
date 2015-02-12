@@ -427,7 +427,7 @@ class Upload(grace.upload.Upload):
         self._publish_latest_url = self._base_url + '/dizmo/' + self._dizmo_id + '/publish/latest'
         self._login_url = self._base_url + '/oauth/login'
         self._upload_url = self._base_url + '/dizmo'
-        self._upload_url_existing = self._base_url + '/dizmo/' + self._version
+        self._upload_url_existing = self._base_url + '/dizmo/' + self._dizmo_id
 
         self._zip_name = self._config['name'] + '_v' + self._config['version'] + '.dzm'
         self._zip_path = os.path.join(self._cwd, 'build', self._zip_name)
@@ -477,7 +477,7 @@ class Upload(grace.upload.Upload):
                     self._password = ''
 
     def _login_response(self, r):
-        if r.status_code != 200:
+        if r.status_code == 401 or r.status_code == 403:
             raise WrongLoginCredentials('Could not log in with the given credentials.')
 
         r = requests.get(self._publish_latest_url,
@@ -490,9 +490,11 @@ class Upload(grace.upload.Upload):
     def _dizmo_exist_check_response(self, r):
         if r.status_code == 404:
             self._upload()
+            return
 
         if r.status_code == 200:
             self._upload_existing()
+            return
 
         response = json.loads(r.text)
         raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
@@ -515,7 +517,7 @@ class Upload(grace.upload.Upload):
         self._upload_response(r)
 
     def _upload_response(self, r):
-        if r.status_code != 200 or r.status_code != 201:
+        if r.status_code != 200 and r.status_code != 201:
             response = json.loads(r.text)
             raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
 
@@ -659,6 +661,8 @@ class Task(grace.task.Task):
                 print('Successfully removed publish status.')
             if self._task == 'publish:display':
                 print(r.text)
+
+            return
 
         response = json.loads(r.text)
         raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
