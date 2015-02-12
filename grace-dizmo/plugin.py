@@ -14,6 +14,9 @@ import getpass
 import json
 
 
+requests.packages.urllib3.disable_warnings()
+
+
 def we_are_frozen():
     # All of the modules are built-in to the interpreter, e.g., by py2exe
     return hasattr(sys, "frozen")
