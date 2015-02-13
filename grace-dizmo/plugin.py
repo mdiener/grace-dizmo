@@ -14,9 +14,6 @@ import getpass
 import json
 
 
-requests.packages.urllib3.disable_warnings()
-
-
 def we_are_frozen():
     # All of the modules are built-in to the interpreter, e.g., by py2exe
     return hasattr(sys, "frozen")
@@ -315,12 +312,6 @@ class Build(grace.build.Build):
             except:
                 print 'Could not copy your Preview.png file.'
 
-        if os.path.exists(assets_path):
-            try:
-                rmtree(assets_path)
-            except:
-                print ('Could not delete your assets folder in the build folder.')
-
 
 class Test(grace.testit.Test):
     def __init__(self, config):
@@ -458,26 +449,20 @@ class Upload(grace.upload.Upload):
         else:
             self._version = self._config['version']
 
-        if 'credentials' not in self._config['dizmo_settings']:
-            if 'credentials' not in self._config:
-                self._username = ''
-                self._password = ''
-        else:
+        self._password = ''
+        self._username = ''
+
+        if 'credentials' in self._config:
+            if 'username' in self._config['credentials']:
+                self._username = self._config['credentials']['username'].encode()
+            if 'password' in self._config['credentials']:
+                self._password = self._config['credentials']['password'].encode()
+
+        if 'credentials' in self._config['dizmo_settings']:
             if 'username' in self._config['dizmo_settings']['credentials']:
                 self._username = self._config['dizmo_settings']['credentials']['username'].encode()
-            else:
-                if 'username' in self._config['credentials']:
-                    self._username = self._config['credentials']['username'].encode()
-                else:
-                    self._username = ''
-
             if 'password' in self._config['dizmo_settings']['credentials']:
                 self._password = self._config['dizmo_settings']['credentials']['password'].encode()
-            else:
-                if 'password' in self._config['credentials']:
-                    self._password = self._config['credentials']['password'].encode()
-                else:
-                    self._password = ''
 
     def _login_response(self, r):
         if r.status_code == 401 or r.status_code == 403:
@@ -574,26 +559,21 @@ class Task(grace.task.Task):
         else:
             self._base_url = self._config['dizmo_settings']['urls']['dizmo_store']
 
-        if 'credentials' not in self._config['dizmo_settings']:
-            if 'credentials' not in self._config:
-                self._username = ''
-                self._password = ''
-        else:
+        self._password = ''
+        self._username = ''
+
+        if 'credentials' in self._config:
+            if 'username' in self._config['credentials']:
+                self._username = self._config['credentials']['username'].encode()
+            if 'password' in self._config['credentials']:
+                self._password = self._config['credentials']['password'].encode()
+
+        if 'credentials' in self._config['dizmo_settings']:
             if 'username' in self._config['dizmo_settings']['credentials']:
                 self._username = self._config['dizmo_settings']['credentials']['username'].encode()
-            else:
-                if 'username' in self._config['credentials']:
-                    self._username = self._config['credentials']['username'].encode()
-                else:
-                    self._username = ''
-
             if 'password' in self._config['dizmo_settings']['credentials']:
                 self._password = self._config['dizmo_settings']['credentials']['password'].encode()
-            else:
-                if 'password' in self._config['credentials']:
-                    self._password = self._config['credentials']['password'].encode()
-                else:
-                    self._password = ''
+
 
     def _login(self):
         if self._username == '':

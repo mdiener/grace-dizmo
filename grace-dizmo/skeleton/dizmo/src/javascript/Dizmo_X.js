@@ -59,9 +59,14 @@ Class("##PROJECTNAME##.Dizmo", {
                 dizmo.privateStorage.setProperty(path, value);
             },
 
+            /**
+             * Set the title of the dizmo
+             * @param {String} value Title of the dizmo
+             * @static
+             */
             setTitle: function(value) {
                 if (jQuery.type(value) === 'string') {
-                    dizmo.setAttribute('title', value);
+                    dizmo.setAttribute('settings/title', value);
                 }
             },
 
@@ -83,11 +88,6 @@ Class("##PROJECTNAME##.Dizmo", {
                 if (jQuery.type(value) === 'undefined') {
                     value = path;
                     path = 'stdout';
-                }
-
-                value = self.prepareValue(value);
-                if (jQuery.type(value) === 'null') {
-                    return;
                 }
 
                 dizmo.publicStorage.setProperty(path, value);
@@ -145,10 +145,8 @@ Class("##PROJECTNAME##.Dizmo", {
                 }
 
                 var id = null;
-                id = dizmo.privateStorage().subscribeTo(path, function(path, val, oldVal) {
-                    var val = self.load(path);
-
-                    callback.call(self, val);
+                id = dizmo.privateStorage.subscribeTo(path, function(path, val, oldVal) {
+                    callback.call(self, val, oldVal);
                 });
 
                 return id;
@@ -207,9 +205,9 @@ Class("##PROJECTNAME##.Dizmo", {
             // Subscribe to displayMode changes
             viewer.subscribeToAttribute('settings/displaymode', function(path, val, oldVal) {
                 if (val === 'presentation') {
-                    dizmo.setAttribute('settings/state/titlebar', true);
+                    dizmo.setAttribute('settings/state/framehidden', true);
                 } else {
-                    dizmo.setAttribute('settings/state/titlebar', false);
+                    dizmo.setAttribute('settings/state/framehidden', false);
                 }
 
                 jQuery(events).trigger('dizmo.onmodechanged', [val]);
