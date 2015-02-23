@@ -205,9 +205,9 @@ Class("##PROJECTNAME##.Dizmo", {
             // Subscribe to displayMode changes
             viewer.subscribeToAttribute('settings/displaymode', function(path, val, oldVal) {
                 if (val === 'presentation') {
-                    dizmo.setAttribute('settings/state/framehidden', true);
+                    dizmo.setAttribute('state/framehidden', true);
                 } else {
-                    dizmo.setAttribute('settings/state/framehidden', false);
+                    dizmo.setAttribute('state/framehidden', false);
                 }
 
                 jQuery(events).trigger('dizmo.onmodechanged', [val]);
