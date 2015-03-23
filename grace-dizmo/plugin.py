@@ -328,10 +328,22 @@ class Test(grace.testit.Test):
         except:
             raise FileNotWritableError('Could not write plist to target location: ', path)
 
+        icon_name = 'Icon.svg'
+        icon_path = os.path.join(os.getcwd(), 'assets', icon_name)
+        if not os.path.exists(icon_path):
+            icon_path = os.path.join(os.getcwd(), icon_name)
+            if not os.path.exists(icon_path):
+                icon_name = 'Icon.png'
+                icon_path = os.path.join(os.getcwd(), 'assets', icon_name)
+                if not os.path.exists(icon_path):
+                    icon_path = os.path.join(os.getcwd(), icon_name)
+                    if not os.path.exists(icon_path):
+                        print 'Could not find an Icon for your test dizmo. It is strongly recommended to add "Icon.svg" in the assets folder.'
+
         try:
-            copy(os.path.join(os.getcwd(), 'Icon.png'), os.path.join(path, 'Icon.png'))
+            copy(icon_path, os.path.join(path, icon_name))
         except:
-            print 'Could not find an icon for your dizmo. You should consider placing a `Icon.png` in your root folder.'
+            raise FileNotWritableError('Could not write the icon "' + icon_name + '" to its target location')
 
 
 class Deploy(grace.deploy.Deploy):
