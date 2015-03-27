@@ -33,10 +33,9 @@ Class("##PROJECTNAME##.Dizmo", {
 
             /**
              * Load the value saved at the given path. If no value is saved
-             * in this path, return null. The value will be parsed through JSON as
-             * this functions assumes it's saved in JSON format (see load)
+             * in this path, return null.
              * @param  {String} path The path to look for a value
-             * @return {mixed}       Either the value as a JavaScript type or null
+             * @return {*}      Value that is saved in the given type
              * @static
              */
             load: function(path) {
@@ -46,11 +45,9 @@ Class("##PROJECTNAME##.Dizmo", {
             },
 
             /**
-             * Saves a value in the given path. The value is, regardless of its type,
-             * first converted into a JSON string and then saved at the given
-             * path.
+             * Saves a value in the given path.
              * @param {String} path  The path to save the value to
-             * @param {Mixed}  value The value to save (can be any JavaScript type)
+             * @param {*}  value The value to save
              * @static
              */
             save: function(path, value) {
@@ -75,7 +72,7 @@ Class("##PROJECTNAME##.Dizmo", {
              * the function is called with only value, it will use the standard publish path
              * 'stdout'.
              * @param  {String} path   The path to publish to
-             * @param  {Mixed}  value  The value to set the publish path to
+             * @param  {*}  value  The value to set the publish path to
              * @static
              */
             publish: function(path, value) {
