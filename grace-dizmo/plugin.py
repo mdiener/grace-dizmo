@@ -51,14 +51,15 @@ def get_plist(config, testname=None, test=False):
         ChangeLog=config['dizmo_settings']['change_log'],
         MinSpaceVersion=config['dizmo_settings']['min_space_version'],
         Tags=config['dizmo_settings']['tags'],
-        Category=config['dizmo_settings']['category']
+        Category=config['dizmo_settings']['category'],
+        HiddenDizmo=config['dizmo_settings']['hidden_dizmo'],
+        AllowResize=config['dizmo_settings']['allow_resize'],
+        TitleEditable=config['dizmo_settings']['title_editable'],
+        ForceUpdate=config['dizmo_settings']['force_update']
     )
 
     if config['dizmo_settings']['elements_version'] != 'none':
         plist['ElementsVersion'] = config['dizmo_settings']['elements_version']
-
-    if config['dizmo_settings']['hidden_dizmo']:
-        plist['hiddenDizmo'] = config['dizmo_settings']['hidden_dizmo']
 
     return plist
 
@@ -219,7 +220,28 @@ class Config:
                     raise WrongFormatError('The main_html has to consist of at least one character.')
 
         if 'hidden_dizmo' not in self._dizmo_config:
-            self._config['dizmo_settings']['hidden_dizmo'] = False
+            self.-config['dizmo_settings']['hidden_dizmo'] = False
+        else:
+            if not isinstance(self._dizmo_config['hidden_dizmo'], bool):
+                raise WrongFormatError('The provided value for hidden_dizmo needs to be a boolean.')
+
+        if 'allow_resize' not in self._dizmo_config:
+            self._config['dizmo_settings']['allow_resize'] = False
+        else:
+            if not isinstance(self._dizmo_config['allow_resize'], bool):
+                raise WrongFormatError('The provided value for allow_resize needs to be a boolean')
+
+        if 'title_editable' not in self._dizmo_config:
+            self._config['dizmo_settings']['title_editable'] = True
+        else:
+            if not isinstance(self._dizmo_config['title_editable'], bool):
+                raise WrongFormatError('The provided value for title_editable needs to be a boolean.')
+
+        if 'force_update' not in self._dizmo_config:
+            self._config['dizmo_settings']['force_update'] = False
+        else:
+            if not isinstance(self._dizmo_config['force_update'], bool):
+                raise WrongFormatError('The provided value for force_update needs to be a boolean.')
 
         if 'elements_version' not in self._dizmo_config:
             self._config['dizmo_settings']['elements_version'] = 'none'
