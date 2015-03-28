@@ -220,7 +220,7 @@ class Config:
                     raise WrongFormatError('The main_html has to consist of at least one character.')
 
         if 'hidden_dizmo' not in self._dizmo_config:
-            self.-config['dizmo_settings']['hidden_dizmo'] = False
+            self._config['dizmo_settings']['hidden_dizmo'] = False
         else:
             if not isinstance(self._dizmo_config['hidden_dizmo'], bool):
                 raise WrongFormatError('The provided value for hidden_dizmo needs to be a boolean.')
