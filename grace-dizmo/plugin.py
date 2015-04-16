@@ -461,17 +461,25 @@ class Upload(grace.upload.Upload):
         self._zip_path = os.path.join(self._cwd, 'build', self._zip_name)
 
     def _check_config(self):
-        if 'urls' not in self._config['dizmo_settings']:
-            if 'urls' not in self._config:
-                raise MissingKeyError('Could not find the urls key in either the global or local config file.')
-
-        if 'dizmo_store' not in self._config['dizmo_settings']['urls']:
-            if 'dizmo_store' not in self._config['urls']:
-                raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
+        if 'urls' in self._config['dizmo_settings']:
+            if 'dizmo_store' in self._config['dizmo_settings']['urls']:
+                self._base_url = self._config['dizmo_settings']['urls']['dizmo_store']
             else:
-                self._base_url = self._config['urls']['dizmo_store']
+                if 'urls' in self._config:
+                    if 'dizmo_store' in self._config['urls']:
+                        self._base_url = self._config['urls']['dizmo_store']
+                    else:
+                        raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
+                else:
+                    raise MissingKeyError('Could not find the urls key in either the global or local config file.')
         else:
-            self._base_url = self._config['dizmo_settings']['urls']['dizmo_store']
+            if 'urls' in self._config:
+                if 'dizmo_store' in self._config['urls']:
+                    self._base_url = self._config['urls']['dizmo_store']
+                else:
+                    raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
+            else:
+                raise MissingKeyError('Could not find the urls key in either the global or local config file.')
 
         if 'bundle_identifier' not in self._config['dizmo_settings']:
             raise MissingKeyError('Could not find the bundle_identifier in your configuration file.')
