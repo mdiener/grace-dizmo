@@ -254,15 +254,17 @@ class Config:
 
 
 class New(grace.create.New):
-    def __init__(self, projectName):
+    def __init__(self, projectName, skeleton):
         self._projectName = projectName
         self._root = get_path()
         self._cwd = os.getcwd()
 
-        try:
-            self._skeleton_path = resource_filename(__name__, os.path.join('skeleton', 'dizmo'))
-        except NotImplementedError:
-            self._skeleton_path = os.path.join(sys.prefix, 'skeleton', 'dizmo')
+        if skeleton == 'default':
+            self._skeleton_url = 'https://github.com/mdiener/grace-dizmo-skeleton/archive/default.zip'
+        if skeleton == 'joose':
+            self._skeleton_url = 'https://github.com/mdiener/grace-dizmo-skeleton/archive/joose.zip'
+
+        self._download_skeleton()
 
         self._projectPath = os.path.join(self._cwd, self._projectName)
 
