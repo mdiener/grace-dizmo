@@ -264,9 +264,9 @@ class New(grace.create.New):
         self._cwd = os.getcwd()
 
         if skeleton == 'default':
-            self._skeleton_url = 'https://github.com/mdiener/grace-dizmo-skeleton/archive/default.zip'
+            self._skeleton_url = 'https://github.com/dizmo/grace-dizmo-skeleton/archive/default.zip'
         if skeleton == 'joose':
-            self._skeleton_url = 'https://github.com/mdiener/grace-dizmo-skeleton/archive/joose.zip'
+            self._skeleton_url = 'https://github.com/dizmo/grace-dizmo-skeleton/archive/joose.zip'
 
         self._download_skeleton()
 
