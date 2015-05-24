@@ -253,6 +253,10 @@ class Config:
         return self._config
 
 
+def get_skeleton_names():
+    return ['default', 'joose']
+
+
 class New(grace.create.New):
     def __init__(self, projectName, skeleton):
         self._projectName = projectName
@@ -397,6 +401,8 @@ class Deploy(grace.deploy.Deploy):
                 rmtree(dest)
             except:
                 raise RemoveFolderError('Could not remove the deploy folder.')
+        else:
+            print 'The dizmo will be deployed, but you need to drag & drop it into the viewer once to associate it with the internal tree. Otherwise your dizmo will not show up in dizmo space.'
 
         try:
             move(source, dest)
@@ -569,6 +575,24 @@ class Task(grace.task.Task):
         except UnknownCommandError as e:
             if self._task not in self._available_tasks:
                 raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + self._task)
+
+    def _show_help(self):
+        super(Task, self)._show_help()
+
+        print '\nGrace Dizmo'
+        print '==========='
+        print 'Grace-dizmo is the currently loaded plugin for this project.'
+        print 'It allows development of dizmos through various helper functions built in grace.'
+        print 'Grace-dizmo also provides three new functions that are solely used to'
+        print 'publish and unpublish a dizmo.'
+        print '\nAdditional Commands'
+        print '-------------------'
+        print 'publish\t\tPublish an uploaded dizmo and make it publicly available.'
+        print 'publish:display\tDisplay the publish status of a dizmo.'
+        print 'unpublish\tRemove a dizmo\'s publish status and make it unavailable in the store.'
+        print '\nFurther Reading'
+        print '---------------'
+        print 'For more information visit: https://www.github.com/mdiener/grace-dizmo'
 
     def execute(self):
         if self._task not in self._available_tasks:
