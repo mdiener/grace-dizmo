@@ -9,9 +9,12 @@ import grace.build
 import grace.testit
 import grace.zipit
 import grace.deploy
+import grace.lint
 import requests
 import getpass
 import json
+import copy
+import collections
 
 
 requests.packages.urllib3.disable_warnings()
@@ -65,6 +68,16 @@ def get_plist(config, testname=None, test=False):
         plist['ElementsVersion'] = config['dizmo_settings']['elements_version']
 
     return plist
+
+
+def update(d, u):
+    for k, v in u.iteritems():
+        if isinstance(v, collections.Mapping):
+            r = update(d.get(k, {}), v)
+            d[k] = r
+        else:
+            d[k] = u[k]
+    return d
 
 
 class Config:
@@ -402,7 +415,7 @@ class Deploy(grace.deploy.Deploy):
             except:
                 raise RemoveFolderError('Could not remove the deploy folder.')
         else:
-            print 'The dizmo will be deployed, but you need to drag & drop it into the viewer once to associate it with the internal tree. Otherwise your dizmo will not show up in dizmo space.'
+            print 'The dizmo will be deployed, but you need to drag & drop the folder "' + self._config['name'] + '" from the build directory into dizmospace once to allow association with it. Otherwise your dizmo will not show up as installed.'
 
         try:
             move(source, dest)
@@ -561,6 +574,23 @@ class Upload(grace.upload.Upload):
         if r.status_code != 200 and r.status_code != 201:
             response = json.loads(r.text)
             raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
+
+
+class Lint(grace.lint.Lint):
+    def __init__(self, config):
+        tmp = update(copy.deepcopy(config['lintoptions']), {
+            'predef': {
+                'DizmoElements': True,
+                'events': True,
+                'bundle': True,
+                'viewer': True,
+                'dizmo': True,
+                'DizmoHelper': True
+            }
+        })
+        config['lintoptions'] = tmp
+
+        super(Lint, self).__init__(config)
 
 
 class Task(grace.task.Task):
