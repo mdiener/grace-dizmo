@@ -13,7 +13,7 @@ import grace.lint
 import requests
 import getpass
 import json
-import copy
+from copy import deepcopy
 import collections
 
 
@@ -578,7 +578,7 @@ class Upload(grace.upload.Upload):
 
 class Lint(grace.lint.Lint):
     def __init__(self, config):
-        tmp = update(copy.deepcopy(config['lintoptions']), {
+        tmp = update(deepcopy(config['lintoptions']), {
             'predef': {
                 'DizmoElements': True,
                 'events': True,
