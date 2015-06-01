@@ -595,6 +595,9 @@ class Lint(grace.lint.Lint):
 
 class Task(grace.task.Task):
     def __init__(self, tasks, config, module):
+        if len(tasks) == 0:
+            raise UnknownCommandError('Need to have at least one task to operate on.')
+
         self._available_tasks = ['publish', 'unpublish', 'publish:display']
         self._task = tasks[0]
         self._verify_ssl = False
