@@ -10,9 +10,9 @@ import grace.testit
 import grace.zipit
 import grace.deploy
 import grace.lint
+from grace.utils import update, load_json, write_json
 import requests
 import getpass
-import json
 from copy import deepcopy
 import collections
 
@@ -70,16 +70,6 @@ def get_plist(config, testname=None, test=False):
     return plist
 
 
-def update(d, u):
-    for k, v in u.iteritems():
-        if isinstance(v, collections.Mapping):
-            r = update(d.get(k, {}), v)
-            d[k] = r
-        else:
-            d[k] = u[k]
-    return d
-
-
 class Config:
     def __init__(self, config):
         self._config = config
@@ -125,7 +115,7 @@ class Config:
         if 'display_name' not in self._dizmo_config:
             raise MissingKeyError('Specify a display name in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['display_name'], unicode):
+            if not isinstance(self._dizmo_config['display_name'], str):
                 raise WrongFormatError('The display_name key needs to be a string.')
             else:
                 if len(self._dizmo_config['display_name']) == 0:
@@ -134,7 +124,7 @@ class Config:
         if 'bundle_name' not in self._dizmo_config:
             raise MissingKeyError('Please specify a "bundle_name" under the dizmo_settings key in your project.cfg file.')
         else:
-            if not isinstance(self._dizmo_config['bundle_name'], unicode):
+            if not isinstance(self._dizmo_config['bundle_name'], str):
                 raise WrongFormatError('The bundle_name key needs to be a string.')
             else:
                 if len(self._dizmo_config['bundle_name']) == 0:
@@ -143,7 +133,7 @@ class Config:
         if 'bundle_identifier' not in self._dizmo_config:
             raise MissingKeyError('Specify a bundle identifier in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['bundle_identifier'], unicode):
+            if not isinstance(self._dizmo_config['bundle_identifier'], str):
                 raise WrongFormatError('The bundle_identifier key needs to be a string.')
             else:
                 if len(self._dizmo_config['bundle_identifier']) == 0:
@@ -176,8 +166,8 @@ class Config:
         if 'description' not in self._dizmo_config:
             raise MissingKeyError('Add a description in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['description'], unicode):
-                raise WrongFormatError('The description needs to be a unicode string.')
+            if not isinstance(self._dizmo_config['description'], str):
+                raise WrongFormatError('The description needs to be a string.')
             else:
                 if len(self._dizmo_config['description']) == 0:
                     raise WrongFormatError('The description has to consist of at least one character.')
@@ -191,8 +181,8 @@ class Config:
         if 'category' not in self._dizmo_config:
             raise MissingKeyError('Add a category in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['category'], unicode):
-                raise WrongFormatError('The category needs to be a unicode string.')
+            if not isinstance(self._dizmo_config['category'], str):
+                raise WrongFormatError('The category needs to be a string.')
             else:
                 if len(self._dizmo_config['category']) == 0:
                     raise WrongFormatError('The category has to consist of at least one character.')
@@ -202,8 +192,8 @@ class Config:
         if 'min_space_version' not in self._dizmo_config:
             raise MissingKeyError('Add a min_space_version in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['min_space_version'], unicode):
-                raise WrongFormatError('The min_space_version needs to be unicode string.')
+            if not isinstance(self._dizmo_config['min_space_version'], str):
+                raise WrongFormatError('The min_space_version needs to be string.')
             else:
                 if len(self._dizmo_config['min_space_version']) == 0:
                     raise WrongFormatError('The min_space_version has to consist of at least one character.')
@@ -211,8 +201,8 @@ class Config:
         if 'change_log' not in self._dizmo_config:
             raise MissingKeyError('Add a change_log in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['change_log'], unicode):
-                raise WrongFormatError('The change_log needs to be unicode string.')
+            if not isinstance(self._dizmo_config['change_log'], str):
+                raise WrongFormatError('The change_log needs to be string.')
             else:
                 if len(self._dizmo_config['change_log']) == 0:
                     raise WrongFormatError('The change_log has to consist of at least one character.')
@@ -220,7 +210,7 @@ class Config:
         if 'api_version' not in self._dizmo_config:
             raise MissingKeyError('Specify an api version in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['api_version'], unicode):
+            if not isinstance(self._dizmo_config['api_version'], str):
                 raise WrongFormatError('The api_version key needs to be a string.')
             else:
                 if len(self._dizmo_config['api_version']) == 0:
@@ -229,7 +219,7 @@ class Config:
         if 'main_html' not in self._dizmo_config:
             raise MissingKeyError('Specify a main html in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['main_html'], unicode):
+            if not isinstance(self._dizmo_config['main_html'], str):
                 raise WrongFormatError('The main_html key needs to be a string.')
             else:
                 if len(self._dizmo_config['main_html']) == 0:
@@ -550,7 +540,7 @@ class Upload(grace.upload.Upload):
             self._upload_existing()
             return
 
-        response = json.loads(r.text)
+        response = load_json(r.text)
         raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
 
     def _upload_existing(self):
@@ -572,7 +562,7 @@ class Upload(grace.upload.Upload):
 
     def _upload_response(self, r):
         if r.status_code != 200 and r.status_code != 201:
-            response = json.loads(r.text)
+            response = load_json(r.text)
             raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
 
 
@@ -694,7 +684,7 @@ class Task(grace.task.Task):
             data['password'] = self._password
 
         r = requests.post(self._login_url,
-            data=json.dumps(data),
+            data=write_json(data),
             headers={'Content-type': 'application/json'},
             verify=self._verify_ssl
         )
@@ -724,7 +714,7 @@ class Task(grace.task.Task):
 
     def _execute_publish(self, state):
         r = requests.put(self._publish_url,
-            data=json.dumps({'publish': state}),
+            data=write_json({'publish': state}),
             headers={'Content-Type': 'application/json'},
             cookies=self._cookies,
             verify=self._verify_ssl
@@ -751,5 +741,5 @@ class Task(grace.task.Task):
 
             return
 
-        response = json.loads(r.text)
+        response = load_json(r.text)
         raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
