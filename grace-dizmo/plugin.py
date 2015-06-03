@@ -15,6 +15,7 @@ import requests
 import getpass
 from copy import deepcopy
 import collections
+import hashlib
 
 
 requests.packages.urllib3.disable_warnings()
@@ -266,10 +267,18 @@ class New(grace.create.New):
         self._root = get_path()
         self._cwd = os.getcwd()
 
+        self._skeleton_parent_folder = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'custom')
+        self._skeleton_path = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'custom', hashlib.md5(skeleton).hexdigest())
+        self._skeleton_url = skeleton
+
         if skeleton == 'default':
             self._skeleton_url = 'https://github.com/dizmo/grace-dizmo-skeleton/archive/default.zip'
+            self._skeleton_parent_folder = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'grace-dizmo')
+            self._skeleton_path = os.path.join(self._skeleton_parent_folder, 'default')
         if skeleton == 'joose':
             self._skeleton_url = 'https://github.com/dizmo/grace-dizmo-skeleton/archive/joose.zip'
+            self._skeleton_parent_folder = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'grace-dizmo')
+            self._skeleton_path = os.path.join(self._skeleton_parent_folder, 'joose')
 
         self._download_skeleton()
 
