@@ -3,13 +3,14 @@ import plistlib
 from shutil import move, rmtree, copy
 import sys
 from pkg_resources import resource_filename
-from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials, FileUploadError
+from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials, FileUploadError, KeyNotAllowedError
 import grace.create
 import grace.build
 import grace.testit
 import grace.zipit
 import grace.deploy
 import grace.lint
+import grace.config
 from grace.utils import update, load_json, write_json
 import requests
 import getpass
@@ -71,9 +72,45 @@ def get_plist(config, testname=None, test=False):
     return plist
 
 
-class Config:
-    def __init__(self, config):
-        self._config = config
+def get_skeleton_names():
+    return ['default', 'joose']
+
+
+class CommandLineParser(grace.cmdparse.CommandLineParser):
+    def _get_epilog(self):
+        epilog = super(CommandLineParser, self)._get_epilog()
+
+        return epilog + '''\
+
+Grace Dizmo
+-----------
+Grace-dizmo is the currently loaded plugin for this project.
+It allows development of dizmos through various helper functions built in grace.
+Grace-dizmo also provides three new functions that are solely used to
+publish and unpublish a dizmo.
+
+Additional Task Commands
+------------------------
+publish         Publish an uploaded dizmo and make it publicly available.
+publish:display Display the publish status of a dizmo.
+unpublish       Remove a dizmo's publish status and make it unavailable in the store.
+
+Additional Overwrite Commands
+-----------------------------
+dizmo_settings:width
+dizmo_settings:height
+dizmo_settings:allow_resize
+dizmo_settings:title_editable
+
+Further Reading
+---------------
+For more information visit: https://www.github.com/mdiener/grace-dizmo
+'''
+
+
+class Config(grace.config.Config):
+    def __init__(self):
+        super(Config, self).__init__()
 
         self._categories = [
             'books_and_references',
@@ -102,12 +139,34 @@ class Config:
             'weather'
         ]
 
-        try:
-            self._check_config()
-        except:
-            raise
+    def _check_update_keys(self, updates):
+        if 'dizmo_settings' in updates:
+            dizmo_settings = updates['dizmo_settings']
 
-    def _check_config(self):
+            if ('dizmo_settings' in dizmo_settings or
+                'bundle_name' in dizmo_settings or
+                'bundle_identifier' in dizmo_settings or
+                'box_inset_x' in dizmo_settings or
+                'box_inset_y' in dizmo_settings or
+                'description' in dizmo_settings or
+                'tags' in dizmo_settings or
+                'category' in dizmo_settings or
+                'min_space_version' in dizmo_settings or
+                'change_log' in dizmo_settings or
+                'api_version' in dizmo_settings or
+                'main_html' in dizmo_settings or
+                'hidden_dizmo' in dizmo_settings or
+                'force_update' in dizmo_settings or
+                'elements_version' in dizmo_settings):
+
+                raise KeyNotAllowedError('Only "width", "height", "allow_resize" and "title_editable" are allowed under "dizmo_settings".')
+
+        super(Config, self)._check_update_keys(updates)
+
+
+    def _parse_config(self):
+        super(Config, self)._parse_config()
+
         if 'dizmo_settings' not in self._config:
             raise MissingKeyError('Could not find settings for dizmo.')
 
@@ -252,13 +311,6 @@ class Config:
 
         if 'elements_version' not in self._dizmo_config:
             self._config['dizmo_settings']['elements_version'] = 'none'
-
-    def get_config(self):
-        return self._config
-
-
-def get_skeleton_names():
-    return ['default', 'joose']
 
 
 class New(grace.create.New):
@@ -593,38 +645,17 @@ class Lint(grace.lint.Lint):
 
 
 class Task(grace.task.Task):
-    def __init__(self, tasks, config, module):
-        if len(tasks) == 0:
-            raise UnknownCommandError('Need to have at least one task to operate on.')
-
+    def __init__(self, task, config, module, test_cases):
         self._available_tasks = ['publish', 'unpublish', 'publish:display']
-        self._task = tasks[0]
+        self._task = task
         self._verify_ssl = False
 
         try:
-            super(Task, self).__init__(tasks, config, module)
+            super(Task, self).__init__(task, config, module, test_cases)
             return
         except UnknownCommandError as e:
             if self._task not in self._available_tasks:
                 raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + self._task)
-
-    def _show_help(self):
-        super(Task, self)._show_help()
-
-        print '\nGrace Dizmo'
-        print '==========='
-        print 'Grace-dizmo is the currently loaded plugin for this project.'
-        print 'It allows development of dizmos through various helper functions built in grace.'
-        print 'Grace-dizmo also provides three new functions that are solely used to'
-        print 'publish and unpublish a dizmo.'
-        print '\nAdditional Commands'
-        print '-------------------'
-        print 'publish\t\tPublish an uploaded dizmo and make it publicly available.'
-        print 'publish:display\tDisplay the publish status of a dizmo.'
-        print 'unpublish\tRemove a dizmo\'s publish status and make it unavailable in the store.'
-        print '\nFurther Reading'
-        print '---------------'
-        print 'For more information visit: https://www.github.com/mdiener/grace-dizmo'
 
     def execute(self):
         if self._task not in self._available_tasks:
