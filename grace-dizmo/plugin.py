@@ -172,6 +172,15 @@ class Config(grace.config.Config):
 
         self._dizmo_config = self._config['dizmo_settings']
 
+        if 'urls' in self._dizmo_config:
+            if 'dizmo_store' in self._dizmo_config['urls']:
+                if 'urls' in self._config:
+                    self._config['urls']['dizmo_store'] = self._dizmo_config['urls']['dizmo_store']
+                else:
+                    self._config['urls'] = {
+                        'dizmo_store': self._dizmo_config['urls']['dizmo_store']
+                    }
+
         if 'display_name' not in self._dizmo_config:
             raise MissingKeyError('Specify a display name in your config file under `dizmo_settings`.')
         else:
@@ -536,25 +545,13 @@ class Upload(grace.upload.Upload):
         self._zip_path = os.path.join(self._cwd, 'build', self._zip_name)
 
     def _check_config(self):
-        if 'urls' in self._config['dizmo_settings']:
-            if 'dizmo_store' in self._config['dizmo_settings']['urls']:
-                self._base_url = self._config['dizmo_settings']['urls']['dizmo_store']
+        if 'urls' in self._config:
+            if 'dizmo_store' in self._config['urls']:
+                self._base_url = self._config['urls']['dizmo_store']
             else:
-                if 'urls' in self._config:
-                    if 'dizmo_store' in self._config['urls']:
-                        self._base_url = self._config['urls']['dizmo_store']
-                    else:
-                        raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
-                else:
-                    raise MissingKeyError('Could not find the urls key in either the global or local config file.')
+                raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
         else:
-            if 'urls' in self._config:
-                if 'dizmo_store' in self._config['urls']:
-                    self._base_url = self._config['urls']['dizmo_store']
-                else:
-                    raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
-            else:
-                raise MissingKeyError('Could not find the urls key in either the global or local config file.')
+            raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
 
         if 'bundle_identifier' not in self._config['dizmo_settings']:
             raise MissingKeyError('Could not find the bundle_identifier in your configuration file.')
@@ -566,8 +563,8 @@ class Upload(grace.upload.Upload):
         else:
             self._version = self._config['version']
 
-        self._password = ''
-        self._username = ''
+        self._password = None
+        self._username = None
 
         if 'credentials' in self._config:
             if 'username' in self._config['credentials']:
@@ -580,6 +577,18 @@ class Upload(grace.upload.Upload):
                 self._username = self._config['dizmo_settings']['credentials']['username'].encode()
             if 'password' in self._config['dizmo_settings']['credentials']:
                 self._password = self._config['dizmo_settings']['credentials']['password'].encode()
+
+    def _get_login_information(self):
+        if self._username is None:
+            self._username = raw_input('Please provide the username for your upload server (or leave blank if none is required): ')
+
+        if self._password is None:
+            self._password = getpass.getpass('Please provide the password for your upload server (or leave blank if none is required): ')
+
+        return {
+            'username': self._username,
+            'password': self._password
+        }
 
     def _login_response(self, r):
         if r.status_code == 401 or r.status_code == 403:
@@ -681,20 +690,16 @@ class Task(grace.task.Task):
         else:
             self._version = self._config['version']
 
-        if 'urls' not in self._config['dizmo_settings']:
-            if 'urls' not in self._config:
-                raise MissingKeyError('Could not find the urls key in either the global or local config file.')
+        if 'urls' not in self._config:
+            raise MissingKeyError('Could not find the urls key in either the global or local config file.')
 
-        if 'dizmo_store' not in self._config['dizmo_settings']['urls']:
-            if 'dizmo_store' not in self._config['urls']:
-                raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
-            else:
-                self._base_url = self._config['urls']['dizmo_store']
+        if 'dizmo_store' not in self._config['urls']:
+            raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
         else:
-            self._base_url = self._config['dizmo_settings']['urls']['dizmo_store']
+            self._base_url = self._config['urls']['dizmo_store']
 
-        self._password = ''
-        self._username = ''
+        self._password = None
+        self._username = None
 
         if 'credentials' in self._config:
             if 'username' in self._config['credentials']:
@@ -710,18 +715,16 @@ class Task(grace.task.Task):
 
 
     def _login(self):
-        if self._username == '':
+        if self._username is None:
             self._username = raw_input('Please provide the username for your upload server (or leave blank if none is required): ')
 
-        if self._password == '':
+        if self._password is None:
             self._password = getpass.getpass('Please provide the password for your upload server (or leave blank if none is required): ')
 
-        data = {}
-
-        if self._username != '':
-            data['username'] = self._username
-        if self._password != '':
-            data['password'] = self._password
+        data = {
+            'username': self._username,
+            'password': self._password
+        }
 
         r = requests.post(self._login_url,
             data=write_json(data),
