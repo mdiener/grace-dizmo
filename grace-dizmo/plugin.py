@@ -672,7 +672,7 @@ class Lint(grace.lint.Lint):
 
 class Task(grace.task.Task):
     def __init__(self, task, config, module, test_cases):
-        self._available_tasks = ['publish', 'unpublish', 'publish:display']
+        self._available_tasks = ['publish', 'unpublish', 'publish:display', 'unpublish:all']
         self._task = task
         self._verify_ssl = False
 
@@ -681,7 +681,9 @@ class Task(grace.task.Task):
             return
         except UnknownCommandError as e:
             if self._task not in self._available_tasks:
-                raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + self._task)
+                task = self._task.split(':')
+                if task[0] != 'unpublish' or task[0] != 'publish' or len(task) != 2:
+                    raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + self._task)
 
     def execute(self):
         if self._task not in self._available_tasks:
@@ -690,8 +692,7 @@ class Task(grace.task.Task):
 
         self._check_config()
 
-        self._publish_url = self._base_url + '/dizmo/' + self._dizmo_id + '/publish/' + self._version
-        self._publish_info_url = self._base_url + '/dizmo/' + self._dizmo_id + '/publish'
+        self._publish_url = self._base_url + '/dizmo/' + self._dizmo_id + '/publish'
         self._login_url = self._base_url + '/oauth/login'
 
         self._login()
@@ -752,21 +753,33 @@ class Task(grace.task.Task):
 
         if self._task == 'publish:display':
             self._access_publish_information()
+            return
         if self._task == 'publish':
-            self._publish_dizmo()
+            self._publish_dizmo(self._config['version'])
+            return
         if self._task == 'unpublish':
-            self._unpublish_dizmo()
+            self._unpublish_dizmo(self._config['version'])
+            return
 
-    def _publish_dizmo(self):
+        task = self._task.split(':')
+        if task[0] == 'unpublish':
+            version = task[1]
+            self._unpublish_dizmo(version)
+        if task[0] == 'publish':
+            version = task[1]
+            self._publish_dizmo(version)
+
+
+    def _publish_dizmo(self, version):
         print('Publishing dizmo with id: ' + self._dizmo_id + ' and version: ' + self._config['version'])
-        self._execute_publish(True)
+        self._execute_publish(True, version)
 
-    def _unpublish_dizmo(self):
+    def _unpublish_dizmo(self, version):
         print('Unpublishing dizmo with id: ' + self._dizmo_id + ' and version: ' + self._config['version'])
-        self._execute_publish(False)
+        self._execute_publish(False, version)
 
-    def _execute_publish(self, state):
-        r = requests.put(self._publish_url,
+    def _execute_publish(self, state, version):
+        r = requests.put(self._publish_url + '/' + version,
             data=write_json({'publish': state}),
             headers={'Content-Type': 'application/json'},
             cookies=self._cookies,
@@ -776,7 +789,7 @@ class Task(grace.task.Task):
         self._display_response(r)
 
     def _access_publish_information(self):
-        r = requests.get(self._publish_info_url,
+        r = requests.get(self._publish_url,
             cookies=self._cookies,
             verify=self._verify_ssl
         )
