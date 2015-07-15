@@ -143,8 +143,7 @@ class Config(grace.config.Config):
         if 'dizmo_settings' in updates:
             dizmo_settings = updates['dizmo_settings']
 
-            if ('dizmo_settings' in dizmo_settings or
-                'bundle_name' in dizmo_settings or
+            if ('bundle_name' in dizmo_settings or
                 'bundle_identifier' in dizmo_settings or
                 'box_inset_x' in dizmo_settings or
                 'box_inset_y' in dizmo_settings or
