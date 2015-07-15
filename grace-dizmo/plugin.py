@@ -163,6 +163,39 @@ class Config(grace.config.Config):
 
         super(Config, self)._check_update_keys(updates)
 
+    def _preparse_config(self, config):
+        url = ''
+
+        if 'dizmo_settings' in config:
+            if 'urls' in config['dizmo_settings']:
+                if 'dizmo_store' in config['dizmo_settings']['urls']:
+                    url = config['dizmo_settings']['urls']['dizmo_store']
+                    if 'urls' in config:
+                        config['urls']['dizmo_store'] = config['dizmo_settings']['urls']['dizmo_store']
+                    else:
+                        config['urls'] = {
+                            'dizmo_store': config['dizmo_settings']['urls']['dizmo_store']
+                        }
+
+                    config['dizmo_settings'].pop('urls')
+
+            username = None
+            password = None
+            if 'credentials' in config['dizmo_settings']:
+                if 'username' in config['dizmo_settings']['credentials']:
+                    username = config['dizmo_settings']['credentials']['username']
+                if 'password' in config['dizmo_settings']['credentials']:
+                    password = config['dizmo_settings']['credentials']['password']
+
+            if username is not None or password is not None:
+                if 'credentials' not in config:
+                    config['credentials'] = {}
+                if username is not None:
+                    config['credentials']['username'] = username
+                if password is not None:
+                    config['credentials']['password'] = password
+
+        return config
 
     def _parse_config(self):
         super(Config, self)._parse_config()
@@ -171,15 +204,6 @@ class Config(grace.config.Config):
             raise MissingKeyError('Could not find settings for dizmo.')
 
         self._dizmo_config = self._config['dizmo_settings']
-
-        if 'urls' in self._dizmo_config:
-            if 'dizmo_store' in self._dizmo_config['urls']:
-                if 'urls' in self._config:
-                    self._config['urls']['dizmo_store'] = self._dizmo_config['urls']['dizmo_store']
-                else:
-                    self._config['urls'] = {
-                        'dizmo_store': self._dizmo_config['urls']['dizmo_store']
-                    }
 
         if 'display_name' not in self._dizmo_config:
             raise MissingKeyError('Specify a display name in your config file under `dizmo_settings`.')
@@ -572,12 +596,6 @@ class Upload(grace.upload.Upload):
             if 'password' in self._config['credentials']:
                 self._password = self._config['credentials']['password'].encode()
 
-        if 'credentials' in self._config['dizmo_settings']:
-            if 'username' in self._config['dizmo_settings']['credentials']:
-                self._username = self._config['dizmo_settings']['credentials']['username'].encode()
-            if 'password' in self._config['dizmo_settings']['credentials']:
-                self._password = self._config['dizmo_settings']['credentials']['password'].encode()
-
     def _get_login_information(self):
         if self._username is None:
             self._username = raw_input('Please provide the username for your upload server (or leave blank if none is required): ')
@@ -706,13 +724,6 @@ class Task(grace.task.Task):
                 self._username = self._config['credentials']['username'].encode()
             if 'password' in self._config['credentials']:
                 self._password = self._config['credentials']['password'].encode()
-
-        if 'credentials' in self._config['dizmo_settings']:
-            if 'username' in self._config['dizmo_settings']['credentials']:
-                self._username = self._config['dizmo_settings']['credentials']['username'].encode()
-            if 'password' in self._config['dizmo_settings']['credentials']:
-                self._password = self._config['dizmo_settings']['credentials']['password'].encode()
-
 
     def _login(self):
         if self._username is None:
