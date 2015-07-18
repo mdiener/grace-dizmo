@@ -35,12 +35,17 @@ def get_path():
 
 
 def get_plist(config, testname=None, test=False):
+    embedded_bundles = []
+
     if test:
         display_name = config['dizmo_settings']['display_name'] + ' ' + testname
         identifier = config['dizmo_settings']['bundle_identifier'] + '.' + testname.lower()
     else:
         display_name = config['dizmo_settings']['display_name']
         identifier = config['dizmo_settings']['bundle_identifier']
+
+        for index, project in enumerate(config['embedded_projects']):
+            embedded_bundles.append(project['bundle_identifier'])
 
     plist = dict(
         BundleDisplayName=display_name,
@@ -66,6 +71,8 @@ def get_plist(config, testname=None, test=False):
         ForceUpdate=config['dizmo_settings']['force_update']
     )
 
+    if len(embedded_bundles) != 0:
+        plist['EmbeddedBundles'] = embedded_bundles
     if config['dizmo_settings']['elements_version'] != 'none':
         plist['ElementsVersion'] = config['dizmo_settings']['elements_version']
 
@@ -160,7 +167,18 @@ class Config(grace.config.Config):
 
                 raise KeyNotAllowedError('Only "width", "height", "allow_resize" and "title_editable" are allowed under "dizmo_settings".')
 
+            if 'bundle_identifier_subproject' in dizmo_settings:
+                updates['dizmo_settings']['bundle_identifier'] = dizmo_settings['bundle_identifier_subproject']
+                updates['dizmo_settings'].pop('bundle_identifier_subproject')
+
         super(Config, self)._check_update_keys(updates)
+
+    def _parse_subprojects(self):
+        super(Config, self)._parse_subprojects()
+
+        for index, project in enumerate(self._config['embedded_projects']):
+            if 'bundle_identifier' not in project:
+                raise MissingKeyError('The bundle_identifier of the embedded project has not been set.')
 
     def _preparse_config(self, config):
         url = ''
@@ -724,6 +742,20 @@ class Task(grace.task.Task):
                 self._username = self._config['credentials']['username'].encode()
             if 'password' in self._config['credentials']:
                 self._password = self._config['credentials']['password'].encode()
+
+    def _execute_subproject(self, project):
+        if 'bundle_identifier' not in project:
+            print('Not building sub project located at "' + project['source']['url'] + '" as the bundle_identifier is missing.')
+            return
+
+        super(Task, self)._execute_subproject(project)
+
+    def _gather_option_string(self, project):
+        string = super(Task, self)._gather_option_string(project)
+
+        string += ' -o dizmo_settings:bundle_identifier_subproject=' + project['bundle_identifier']
+
+        return string
 
     def _login(self):
         if self._username is None:
