@@ -398,20 +398,6 @@ class Build(grace.build.Build):
     def run(self):
         help_path = os.path.join(os.getcwd(), 'help')
         path = self._config['build_path']
-        valid = False
-
-        if not os.path.exists(help_path):
-            raise FolderNotFoundError('There is no help folder. Please refer to the dizmo documentation on how to create one.')
-
-        language_dirs = next(os.walk(help_path))[1]
-
-        for lang_dir in language_dirs:
-            if len(lang_dir) <= 2:
-                if os.path.isfile(os.path.join(help_path, lang_dir, 'help.md')):
-                    valid = True
-
-        if not valid:
-            raise FileNotFoundError('Could not find any help.md file in any language directory under help. Please refer to the dizmo documentation for more information about how to set up the help directory.')
 
         super(Build, self).run()
 
@@ -478,6 +464,23 @@ class Build(grace.build.Build):
                 print 'Could not copy your Preview.png file.'
 
     def _build_help(self, help_path):
+        valid = False
+
+        if not os.path.exists(help_path):
+            print('There is no help folder. Please refer to the dizmo documentation on how to create one.')
+            return
+
+        language_dirs = next(os.walk(help_path))[1]
+
+        for lang_dir in language_dirs:
+            if len(lang_dir) <= 2:
+                if os.path.isfile(os.path.join(help_path, lang_dir, 'help.md')):
+                    valid = True
+
+        if not valid:
+            print('Could not find any help.md file in any language directory under help. Please refer to the dizmo documentation for more information about how to set up the help directory.')
+            return
+
         z = None
         destination = os.path.join(os.getcwd(), self._config['build_path'], 'help.zip')
 
