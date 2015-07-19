@@ -3,7 +3,7 @@ import plistlib
 from shutil import move, rmtree, copy
 import sys
 from pkg_resources import resource_filename
-from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials, FileUploadError, KeyNotAllowedError
+from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials, FileUploadError, KeyNotAllowedError, FileNotFoundError, FolderNotFoundError
 import grace.create
 import grace.build
 import grace.testit
@@ -17,6 +17,7 @@ import getpass
 from copy import deepcopy
 import collections
 import hashlib
+import zipfile
 
 
 requests.packages.urllib3.disable_warnings()
@@ -395,12 +396,36 @@ class Build(grace.build.Build):
         super(Build, self).__init__(config)
 
     def run(self):
+        help_path = os.path.join(os.getcwd(), 'help')
+        path = self._config['build_path']
+        valid = False
+
+        if not os.path.exists(help_path):
+            raise FolderNotFoundError('There is no help folder. Please refer to the dizmo documentation on how to create one.')
+
+        language_dirs = next(os.walk(help_path))[1]
+
+        for lang_dir in language_dirs:
+            if len(lang_dir) <= 2:
+                if os.path.isfile(os.path.join(help_path, lang_dir, 'help.md')):
+                    valid = True
+
+        if not valid:
+            raise FileNotFoundError('Could not find any help.md file in any language directory under help. Please refer to the dizmo documentation for more information about how to set up the help directory.')
+
         super(Build, self).run()
 
-        plist = get_plist(self._config)
-        path = self._config['build_path']
+        self._copy_images(path)
+        self._build_help(help_path)
 
-        assets_path = os.path.join(path, 'assets')
+        plist = get_plist(self._config)
+        try:
+            plistlib.writePlist(plist, os.path.join(path, 'Info.plist'))
+        except:
+            raise FileNotWritableError('Could not write plist to target location: ', path)
+
+    def _copy_images(self, build_path):
+        assets_path = os.path.join(build_path, 'assets')
 
         image_PNG_source = os.path.join(os.getcwd(), 'Icon.png')
         if not os.path.isfile(image_PNG_source):
@@ -422,40 +447,53 @@ class Build(grace.build.Build):
         if not os.path.isfile(image_preview_source):
             image_preview_source = os.path.join(assets_path, 'Preview.png')
 
-        try:
-            plistlib.writePlist(plist, os.path.join(path, 'Info.plist'))
-        except:
-            raise FileNotWritableError('Could not write plist to target location: ', path)
-
         if os.path.isfile(image_PNG_source):
             try:
-                copy(image_PNG_source, os.path.join(path, 'Icon.png'))
+                copy(image_PNG_source, os.path.join(build_path, 'Icon.png'))
             except:
                 print 'Could not copy your Icon.png file.'
 
         if os.path.isfile(image_PNG_dark_source):
             try:
-                copy(image_PNG_dark_source, os.path.join(path, 'Icon-dark.png'))
+                copy(image_PNG_dark_source, os.path.join(build_path, 'Icon-dark.png'))
             except:
                 print 'Could not copy your Icon-dark.png file.'
 
         if os.path.isfile(image_SVG_source):
             try:
-                copy(image_SVG_source, os.path.join(path, 'Icon.svg'))
+                copy(image_SVG_source, os.path.join(build_path, 'Icon.svg'))
             except:
                 print 'Could not copy your Icon.svg file.'
 
         if os.path.isfile(image_SVG_dark_source):
             try:
-                copy(image_SVG_dark_source, os.path.join(path, 'Icon-dark.svg'))
+                copy(image_SVG_dark_source, os.path.join(build_path, 'Icon-dark.svg'))
             except:
                 print 'Could not copy your Icon-dark.svg file.'
 
         if os.path.isfile(image_preview_source):
             try:
-                copy(image_preview_source, os.path.join(path, 'Preview.png'))
+                copy(image_preview_source, os.path.join(build_path, 'Preview.png'))
             except:
                 print 'Could not copy your Preview.png file.'
+
+    def _build_help(self, help_path):
+        z = None
+        destination = os.path.join(os.getcwd(), self._config['build_path'], 'help.zip')
+
+        try:
+            z = zipfile.ZipFile(destination, 'a', zipfile.ZIP_DEFLATED)
+        except RuntimeError as e:
+            z = zipfile.ZipFile(destination, 'a')
+
+        for root, dirs, files in os.walk(help_path):
+            for f in files:
+                tmpfilename = os.path.join(root, f).split(help_path)[1][1:]
+                zipfilename = os.path.join('help', tmpfilename)
+                try:
+                    z.write(os.path.join(root, f), zipfilename)
+                except:
+                    raise FileNotWritableError('Could not write to the zip file.')
 
 
 class Test(grace.testit.Test):
