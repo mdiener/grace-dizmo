@@ -3,7 +3,7 @@ import plistlib
 from shutil import move, rmtree, copy
 import sys
 from pkg_resources import resource_filename
-from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials, FileUploadError, KeyNotAllowedError, FileNotFoundError, FolderNotFoundError
+from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials, RemoteServerError, KeyNotAllowedError, FileNotFoundError, FolderNotFoundError
 import grace.create
 import grace.build
 import grace.testit
@@ -687,7 +687,7 @@ class Upload(grace.upload.Upload):
             return
 
         response = load_json(r.text)
-        raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
+        raise RemoteServerError('Error from store server (' + self._base_url + '): ' + response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
 
     def _upload_existing(self):
         if not os.path.exists(self._zip_path):
@@ -709,7 +709,7 @@ class Upload(grace.upload.Upload):
     def _upload_response(self, r):
         if r.status_code != 200 and r.status_code != 201:
             response = load_json(r.text)
-            raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
+            raise RemoteServerError('Error from store server (' + self._base_url + '): ' + response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
 
 
 class Lint(grace.lint.Lint):
@@ -881,4 +881,4 @@ class Task(grace.task.Task):
             return
 
         response = load_json(r.text)
-        raise FileUploadError(response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
+        raise RemoteServerError('Error from store server (' + self._base_url + '): ' + response['errormessage'] + ' - Error Nr.: ' + str(response['errornumber']))
