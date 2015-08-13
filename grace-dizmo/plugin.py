@@ -731,8 +731,9 @@ class Lint(grace.lint.Lint):
 
 class Task(grace.task.Task):
     def __init__(self, task, config, module, test_cases):
-        self._available_tasks = ['publish', 'unpublish', 'publish:display', 'unpublish:all']
+        self._available_tasks = ['publish', 'unpublish']
         self._task = task
+        self._subtask = ''
         self._verify_ssl = False
 
         try:
@@ -741,8 +742,17 @@ class Task(grace.task.Task):
         except UnknownCommandError as e:
             if self._task not in self._available_tasks:
                 task = self._task.split(':')
-                if task[0] != 'unpublish' or task[0] != 'publish' or len(task) != 2:
+                if task[0] != 'unpublish' and task[0] != 'publish' and len(task) != 2:
                     raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + self._task)
+                else:
+                    if task[1] != 'display':
+                        try:
+                            version = float(task[1])
+                        except:
+                            raise UnknownCommandError('The provided sub-argument for the task could not be recognized. Use either "display" or a version number (0.2, 1.5, etc.)')
+
+                    self._task = task[0]
+                    self._subtask = task[1]
 
     def execute(self):
         if self._task not in self._available_tasks:
@@ -824,31 +834,28 @@ class Task(grace.task.Task):
 
         self._cookies = r.cookies
 
-        if self._task == 'publish:display':
-            self._access_publish_information()
-            return
         if self._task == 'publish':
-            self._publish_dizmo(self._config['version'])
-            return
+            if self._subtask == 'display':
+                self._access_publish_information()
+                return
+            elif self._subtask == '':
+                self._publish_dizmo(self._config['version'])
+                return;
+            else:
+                self._publish_dizmo(self._subtask)
         if self._task == 'unpublish':
-            self._unpublish_dizmo(self._config['version'])
-            return
-
-        task = self._task.split(':')
-        if task[0] == 'unpublish':
-            version = task[1]
-            self._unpublish_dizmo(version)
-        if task[0] == 'publish':
-            version = task[1]
-            self._publish_dizmo(version)
-
+            if self._subtask == '':
+                self._unpublish_dizmo(self._config['version'])
+                return
+            else:
+                self._unpublish_dizmo(self._subtask)
 
     def _publish_dizmo(self, version):
-        print('Publishing dizmo with id: ' + self._dizmo_id + ' and version: ' + self._config['version'])
+        print('Publishing dizmo with id "' + self._dizmo_id + '" and version "' + version + '".')
         self._execute_publish(True, version)
 
     def _unpublish_dizmo(self, version):
-        print('Unpublishing dizmo with id: ' + self._dizmo_id + ' and version: ' + self._config['version'])
+        print('Unpublishing dizmo with id "' + self._dizmo_id + '" and version "' + version + '".')
         self._execute_publish(False, version)
 
     def _execute_publish(self, state, version):
@@ -872,11 +879,12 @@ class Task(grace.task.Task):
     def _display_response(self, r):
         if r.status_code == 200:
             if self._task == 'publish':
-                print('Successfully published the dizmo.')
+                if self._subtask == 'display':
+                    print(r.text)
+                else:
+                    print('Successfully published the dizmo.')
             if self._task == 'unpublish':
                 print('Successfully removed publish status.')
-            if self._task == 'publish:display':
-                print(r.text)
 
             return
 
