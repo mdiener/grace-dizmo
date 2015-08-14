@@ -69,7 +69,10 @@ def get_plist(config, testname=None, test=False):
         HiddenDizmo=config['dizmo_settings']['hidden_dizmo'],
         AllowResize=config['dizmo_settings']['allow_resize'],
         TitleEditable=config['dizmo_settings']['title_editable'],
-        ForceUpdate=config['dizmo_settings']['force_update']
+        ForceUpdate=config['dizmo_settings']['force_update'],
+        attributes=config['dizmo_settings']['attributes'],
+        private=config['dizmo_settings']['private'],
+        public=config['dizmo_settings']['public']
     )
 
     if len(embedded_bundles) != 0:
@@ -362,6 +365,15 @@ class Config(grace.config.Config):
 
         if 'elements_version' not in self._dizmo_config:
             self._config['dizmo_settings']['elements_version'] = 'none'
+
+        if 'attributes' not in self._dizmo_config:
+            self._config['dizmo_settings']['attributes'] = {}
+
+        if 'private' not in self._dizmo_config:
+            self._config['dizmo_settings']['private'] = {}
+
+        if 'public' not in self._dizmo_config:
+            self._config['dizmo_settings']['public'] = {}
 
 
 class New(grace.create.New):
