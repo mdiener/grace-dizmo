@@ -18,6 +18,7 @@ from copy import deepcopy
 import collections
 import hashlib
 import zipfile
+import re
 
 
 requests.packages.urllib3.disable_warnings()
@@ -758,9 +759,8 @@ class Task(grace.task.Task):
                     raise UnknownCommandError('The provided argument(s) could not be recognized by the manage.py script: ' + self._task)
                 else:
                     if task[1] != 'display':
-                        try:
-                            version = float(task[1])
-                        except:
+                        pattern = re.compile('^([0-9]+\.?)*[0-9]+$')
+                        if not pattern.match(task[1]):
                             raise UnknownCommandError('The provided sub-argument for the task could not be recognized. Use either "display" or a version number (0.2, 1.5, etc.)')
 
                     self._task = task[0]
