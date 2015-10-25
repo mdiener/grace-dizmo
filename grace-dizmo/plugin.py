@@ -70,11 +70,17 @@ def get_plist(config, testname=None, test=False):
         HiddenDizmo=config['dizmo_settings']['hidden_dizmo'],
         AllowResize=config['dizmo_settings']['allow_resize'],
         TitleEditable=config['dizmo_settings']['title_editable'],
-        ForceUpdate=config['dizmo_settings']['force_update'],
-        attributes=config['dizmo_settings']['attributes'],
-        private=config['dizmo_settings']['private'],
-        public=config['dizmo_settings']['public']
+        ForceUpdate=config['dizmo_settings']['force_update']
     )
+
+    if config['dizmo_settings']['tree_values']['attributes']:
+        plist['Attributes'] = config['dizmo_settings']['tree_values']['attributes']
+
+    if config['dizmo_settings']['tree_values']['private']:
+        plist['Private'] = config['dizmo_settings']['tree_values']['private']
+
+    if config['dizmo_settings']['tree_values']['public']:
+        plist['Public'] = config['dizmo_settings']['tree_values']['public']
 
     if len(embedded_bundles) != 0:
         plist['EmbeddedBundles'] = embedded_bundles
@@ -375,6 +381,30 @@ class Config(grace.config.Config):
 
         if 'public' not in self._dizmo_config:
             self._config['dizmo_settings']['public'] = {}
+
+        if 'tree_values' not in self._dizmo_config:
+            self._config['dizmo_settings']['tree_values'] = None
+        else:
+            if not isinstance(self._dizmo_config['tree_values'], dict):
+                raise WrongFormatError('The provided tree_values key has to be an object.')
+
+            if 'attributes' not in self._dizmo_config['tree_values']:
+                self._config['dizmo_settings']['tree_values']['attributes'] = None
+            else:
+                if not isinstance(self._dizmo_config['tree_values']['attributes'], dict):
+                    raise WrongFormatError('The provided attributes key in tree_values has to be an object.')
+
+            if 'private' not in self._dizmo_config['tree_values']:
+                self._config['dizmo_settings']['tree_values']['private'] = None
+            else:
+                if not isinstance(self._dizmo_config['tree_values']['private'], dict):
+                    raise WrongFormatError('The provided private key in tree_values has to be an object.')
+
+            if 'public' not in self._dizmo_config['tree_values']:
+                self._config['dizmo_settings']['tree_values']['public'] = None
+            else:
+                if not isinstance(self._dizmo_config['tree_values']['public'], dict):
+                    raise WrongFormatError('The provided public key in tree_values has to be an object.')
 
 
 class New(grace.create.New):
