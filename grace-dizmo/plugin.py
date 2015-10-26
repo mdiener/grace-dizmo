@@ -73,14 +73,15 @@ def get_plist(config, testname=None, test=False):
         ForceUpdate=config['dizmo_settings']['force_update']
     )
 
-    if config['dizmo_settings']['tree_values']['attributes']:
-        plist['Attributes'] = config['dizmo_settings']['tree_values']['attributes']
+    if config['dizmo_settings']['tree_values']:
+        if config['dizmo_settings']['tree_values']['attributes']:
+            plist['Attributes'] = config['dizmo_settings']['tree_values']['attributes']
 
-    if config['dizmo_settings']['tree_values']['private']:
-        plist['Private'] = config['dizmo_settings']['tree_values']['private']
+        if config['dizmo_settings']['tree_values']['private']:
+            plist['Private'] = config['dizmo_settings']['tree_values']['private']
 
-    if config['dizmo_settings']['tree_values']['public']:
-        plist['Public'] = config['dizmo_settings']['tree_values']['public']
+        if config['dizmo_settings']['tree_values']['public']:
+            plist['Public'] = config['dizmo_settings']['tree_values']['public']
 
     if len(embedded_bundles) != 0:
         plist['EmbeddedBundles'] = embedded_bundles
