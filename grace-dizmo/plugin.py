@@ -92,7 +92,7 @@ def get_plist(config, testname=None, test=False):
 
 
 def get_skeleton_names():
-    return ['default', 'joose', 'coffee']
+    return ['basic', 'joose', 'coffee']
 
 
 class CommandLineParser(grace.cmdparse.CommandLineParser):
@@ -418,10 +418,10 @@ class New(grace.create.New):
         self._skeleton_path = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'custom', hashlib.md5(skeleton).hexdigest())
         self._skeleton_url = skeleton
 
-        if skeleton == 'default':
-            self._skeleton_url = 'https://github.com/dizmo/grace-dizmo-skeleton/archive/default.zip'
+        if skeleton == 'basic':
+            self._skeleton_url = 'https://github.com/dizmo/grace-dizmo-skeleton/archive/basic.zip'
             self._skeleton_parent_folder = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'grace-dizmo')
-            self._skeleton_path = os.path.join(self._skeleton_parent_folder, 'default')
+            self._skeleton_path = os.path.join(self._skeleton_parent_folder, 'basic')
         if skeleton == 'joose':
             self._skeleton_url = 'https://github.com/dizmo/grace-dizmo-skeleton/archive/joose.zip'
             self._skeleton_parent_folder = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'grace-dizmo')
