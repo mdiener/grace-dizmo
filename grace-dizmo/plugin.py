@@ -73,20 +73,26 @@ def get_plist(config, testname=None, test=False):
         ForceUpdate=config['dizmo_settings']['force_update']
     )
 
-    if config['dizmo_settings']['tree_values']:
-        if config['dizmo_settings']['tree_values']['attributes']:
+    if 'additional_plist_values' in config['dizmo_settings']:
+        keys = config['dizmo_settings']['additional_plist_values']
+        for key, value in keys.iteritems():
+            plist[key] = value
+
+    if config['dizmo_settings']['elements_version'] != 'none':
+        plist['ElementsVersion'] = config['dizmo_settings']['elements_version']
+
+    if config['dizmo_settings']['tree_values'] is not None:
+        if config['dizmo_settings']['tree_values']['attributes'] is not None:
             plist['Attributes'] = config['dizmo_settings']['tree_values']['attributes']
 
-        if config['dizmo_settings']['tree_values']['private']:
+        if config['dizmo_settings']['tree_values']['private'] is not None:
             plist['Private'] = config['dizmo_settings']['tree_values']['private']
 
-        if config['dizmo_settings']['tree_values']['public']:
+        if config['dizmo_settings']['tree_values']['public'] is not None:
             plist['Public'] = config['dizmo_settings']['tree_values']['public']
 
     if len(embedded_bundles) != 0:
         plist['EmbeddedBundles'] = embedded_bundles
-    if config['dizmo_settings']['elements_version'] != 'none':
-        plist['ElementsVersion'] = config['dizmo_settings']['elements_version']
 
     return plist
 
