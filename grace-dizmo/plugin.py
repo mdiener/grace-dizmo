@@ -78,7 +78,10 @@ def get_plist(config, testname=None, test=False):
         for key, value in keys.iteritems():
             plist[key] = value
 
-    if config['dizmo_settings']['elements_version'] != 'none':
+    if config['dizmo_settings']['helper_version'] is not None:
+        plist['HelperVersion'] = config['dizmo_settings']['helper_version']
+
+    if config['dizmo_settings']['elements_version'] is not None:
         plist['ElementsVersion'] = config['dizmo_settings']['elements_version']
 
     if config['dizmo_settings']['tree_values'] is not None:
@@ -378,7 +381,10 @@ class Config(grace.config.Config):
                 raise WrongFormatError('The provided value for force_update needs to be a boolean.')
 
         if 'elements_version' not in self._dizmo_config:
-            self._config['dizmo_settings']['elements_version'] = 'none'
+            self._config['dizmo_settings']['elements_version'] = None
+
+        if 'helper_version' not in self._dizmo_config:
+            self._config['dizmo_settings']['helper_version'] = None
 
         if 'attributes' not in self._dizmo_config:
             self._config['dizmo_settings']['attributes'] = {}
