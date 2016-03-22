@@ -629,18 +629,31 @@ class Zip(grace.zipit.Zip):
     def __init__(self, config):
         super(Zip, self).__init__(config)
 
+        self._source_zip_name = self._zip_name
+        if 'zip_name' not in self._config:
+            self._zip_name = self._config['name'] + '_' + self._config['version'] + '.dzm'
+        else:
+            self._zip_name = self._config['zip_name']
+
     def run(self, testname):
         super(Zip, self).run(testname)
 
+        if self._source_zip_name == self._zip_name:
+            return
+
         if self._config['test']:
             name = self._config['name'] + '_' + testname
+            zip_name = testname + '_' + self._zip_name
+            source_zip_name = testname + '_' + self._source_zip_name
         elif self._config['build']:
             name = self._config['name']
+            zip_name = self._zip_name
+            source_zip_name = self._source_zip_name
         else:
             raise MissingKeyError()
 
-        source = os.path.join(os.getcwd(), 'build', name + '_v' + self._config['version'] + '.zip')
-        dest = os.path.join(os.getcwd(), 'build', name + '_v' + self._config['version'] + '.dzm')
+        source = os.path.join(os.getcwd(), 'build', source_zip_name)
+        dest = os.path.join(os.getcwd(), 'build', zip_name)
 
         try:
             self._move_zip(source, dest)
@@ -648,8 +661,8 @@ class Zip(grace.zipit.Zip):
             raise
 
         if self._zip_path is not None:
-            source = os.path.join(self._zip_path, name + '_v' + self._config['version'] + '.zip')
-            dest = os.path.join(self._zip_path, name + '_v' + self._config['version'] + '.dzm')
+            source = os.path.join(self._zip_path, source_zip_name)
+            dest = os.path.join(self._zip_path, zip_name)
 
             try:
                 self._move_zip(source, dest)
