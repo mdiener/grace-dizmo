@@ -629,57 +629,8 @@ class Zip(grace.zipit.Zip):
     def __init__(self, config):
         super(Zip, self).__init__(config)
 
-        self._source_zip_name = self._zip_name
         if 'zip_name' not in self._config:
             self._zip_name = self._config['name'] + '_' + self._config['version'] + '.dzm'
-        else:
-            self._zip_name = self._config['zip_name']
-
-    def run(self, testname):
-        super(Zip, self).run(testname)
-
-        if self._source_zip_name == self._zip_name:
-            return
-
-        if self._config['test']:
-            name = self._config['name'] + '_' + testname
-            zip_name = testname + '_' + self._zip_name
-            source_zip_name = testname + '_' + self._source_zip_name
-        elif self._config['build']:
-            name = self._config['name']
-            zip_name = self._zip_name
-            source_zip_name = self._source_zip_name
-        else:
-            raise MissingKeyError()
-
-        source = os.path.join(os.getcwd(), 'build', source_zip_name)
-        dest = os.path.join(os.getcwd(), 'build', zip_name)
-
-        try:
-            self._move_zip(source, dest)
-        except:
-            raise
-
-        if self._zip_path is not None:
-            source = os.path.join(self._zip_path, source_zip_name)
-            dest = os.path.join(self._zip_path, zip_name)
-
-            try:
-                self._move_zip(source, dest)
-            except:
-                raise
-
-    def _move_zip(self, source, dest):
-        if os.path.exists(dest):
-            try:
-                os.remove(dest)
-            except:
-                raise FileNotWritableError('Could not remove the old dizmo zip file.')
-
-        try:
-            move(source, dest)
-        except:
-            raise FileNotWritableError('Could not move the zip target to the dizmo path.')
 
 
 class Upload(grace.upload.Upload):
