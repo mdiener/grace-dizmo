@@ -635,15 +635,16 @@ class Zip(grace.zipit.Zip):
 
 class Upload(grace.upload.Upload):
     def __init__(self, config):
-        super(Upload, self).__init__(config)
+        if 'urls' not in config:
+            raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
 
-        if 'urls' in self._config:
-            if 'dizmo_store' in self._config['urls']:
-                self._base_url = self._config['urls']['dizmo_store']
-            else:
-                raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
+        if 'dizmo_store' in config['urls']:
+            self._base_url = config['urls']['dizmo_store']
+            config['urls']['upload'] = self._base_url
         else:
             raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
+
+        super(Upload, self).__init__(config)
 
         self._dizmo_id = self._config['dizmo_settings']['bundle_identifier']
         self._version = self._config['version']
@@ -654,6 +655,7 @@ class Upload(grace.upload.Upload):
 
         if 'zip_name' not in self._config:
             self._zip_name = self._config['name'] + '-' + self._config['version'] + '.dzm'
+            self._zip_path = os.path.join(self._cwd, 'build', self._zip_name)
 
     def _get_login_information(self):
         if self._username is None:
