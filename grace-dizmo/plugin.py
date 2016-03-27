@@ -630,27 +630,13 @@ class Zip(grace.zipit.Zip):
         super(Zip, self).__init__(config)
 
         if 'zip_name' not in self._config:
-            self._zip_name = self._config['name'] + '_' + self._config['version'] + '.dzm'
+            self._zip_name = self._config['name'] + '-' + self._config['version'] + '.dzm'
 
 
 class Upload(grace.upload.Upload):
     def __init__(self, config):
-        self._cwd = os.getcwd()
-        self._root = get_path()
-        self._config = config
-        self._verify_ssl = False
+        super(Upload, self).__init__(config)
 
-        self._check_config()
-
-        self._publish_latest_url = self._base_url + '/dizmo/' + self._dizmo_id + '/publish/latest'
-        self._login_url = self._base_url + '/oauth/login'
-        self._upload_url = self._base_url + '/dizmo'
-        self._upload_url_existing = self._base_url + '/dizmo/' + self._dizmo_id
-
-        self._zip_name = self._config['name'] + '_v' + self._config['version'] + '.dzm'
-        self._zip_path = os.path.join(self._cwd, 'build', self._zip_name)
-
-    def _check_config(self):
         if 'urls' in self._config:
             if 'dizmo_store' in self._config['urls']:
                 self._base_url = self._config['urls']['dizmo_store']
@@ -659,24 +645,15 @@ class Upload(grace.upload.Upload):
         else:
             raise MissingKeyError('Could not find the dizmo_store key in either the global or local config file.')
 
-        if 'bundle_identifier' not in self._config['dizmo_settings']:
-            raise MissingKeyError('Could not find the bundle_identifier in your configuration file.')
-        else:
-            self._dizmo_id = self._config['dizmo_settings']['bundle_identifier']
+        self._dizmo_id = self._config['dizmo_settings']['bundle_identifier']
+        self._version = self._config['version']
+        self._publish_latest_url = self._base_url + '/dizmo/' + self._dizmo_id + '/publish/latest'
+        self._login_url = self._base_url + '/oauth/login'
+        self._upload_url = self._base_url + '/dizmo'
+        self._upload_url_existing = self._base_url + '/dizmo/' + self._dizmo_id
 
-        if 'version' not in self._config:
-            raise MissingKeyError('Could not find version in your configuration file.')
-        else:
-            self._version = self._config['version']
-
-        self._password = None
-        self._username = None
-
-        if 'credentials' in self._config:
-            if 'username' in self._config['credentials']:
-                self._username = self._config['credentials']['username'].encode()
-            if 'password' in self._config['credentials']:
-                self._password = self._config['credentials']['password'].encode()
+        if 'zip_name' not in self._config:
+            self._zip_name = self._config['name'] + '-' + self._config['version'] + '.dzm'
 
     def _get_login_information(self):
         if self._username is None:
