@@ -1,3 +1,7 @@
+from __future__ import print_function
+from builtins import next
+from builtins import input
+from builtins import str
 import os
 import plistlib
 from shutil import move, rmtree, copy
@@ -11,7 +15,7 @@ import grace.zipit
 import grace.deploy
 import grace.lint
 import grace.config
-from grace.utils import update, load_json, write_json
+from grace.utils import update, load_json, write_json, isstring
 import requests
 import getpass
 from copy import deepcopy
@@ -32,8 +36,8 @@ def we_are_frozen():
 def get_path():
     encoding = sys.getfilesystemencoding()
     if we_are_frozen():
-        return os.path.dirname(unicode(sys.executable, encoding))
-    return os.path.dirname(unicode(__file__, encoding))
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(__file__)
 
 
 def get_plist(config, testname=None, test=False):
@@ -75,7 +79,7 @@ def get_plist(config, testname=None, test=False):
 
     if 'additional_plist_values' in config['dizmo_settings']:
         keys = config['dizmo_settings']['additional_plist_values']
-        for key, value in keys.iteritems():
+        for key, value in keys.items():
             plist[key] = value
 
     if config['dizmo_settings']['helper_version'] is not None:
@@ -246,7 +250,7 @@ class Config(grace.config.Config):
         if 'display_name' not in self._dizmo_config:
             raise MissingKeyError('Specify a display name in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['display_name'], str):
+            if not isstring(self._dizmo_config['display_name']):
                 raise WrongFormatError('The display_name key needs to be a string.')
             else:
                 if len(self._dizmo_config['display_name']) == 0:
@@ -255,7 +259,7 @@ class Config(grace.config.Config):
         if 'bundle_name' not in self._dizmo_config:
             raise MissingKeyError('Please specify a "bundle_name" under the dizmo_settings key in your project.cfg file.')
         else:
-            if not isinstance(self._dizmo_config['bundle_name'], str):
+            if not isstring(self._dizmo_config['bundle_name']):
                 raise WrongFormatError('The bundle_name key needs to be a string.')
             else:
                 if len(self._dizmo_config['bundle_name']) == 0:
@@ -264,7 +268,7 @@ class Config(grace.config.Config):
         if 'bundle_identifier' not in self._dizmo_config:
             raise MissingKeyError('Specify a bundle identifier in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['bundle_identifier'], str):
+            if not isstring(self._dizmo_config['bundle_identifier']):
                 raise WrongFormatError('The bundle_identifier key needs to be a string.')
             else:
                 if len(self._dizmo_config['bundle_identifier']) == 0:
@@ -297,7 +301,7 @@ class Config(grace.config.Config):
         if 'description' not in self._dizmo_config:
             raise MissingKeyError('Add a description in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['description'], str):
+            if not isstring(self._dizmo_config['description']):
                 raise WrongFormatError('The description needs to be a string.')
             else:
                 if len(self._dizmo_config['description']) == 0:
@@ -312,7 +316,7 @@ class Config(grace.config.Config):
         if 'category' not in self._dizmo_config:
             raise MissingKeyError('Add a category in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['category'], str):
+            if not isstring(self._dizmo_config['category']):
                 raise WrongFormatError('The category needs to be a string.')
             else:
                 if len(self._dizmo_config['category']) == 0:
@@ -323,7 +327,7 @@ class Config(grace.config.Config):
         if 'min_space_version' not in self._dizmo_config:
             raise MissingKeyError('Add a min_space_version in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['min_space_version'], str):
+            if not isstring(self._dizmo_config['min_space_version']):
                 raise WrongFormatError('The min_space_version needs to be string.')
             else:
                 if len(self._dizmo_config['min_space_version']) == 0:
@@ -332,7 +336,7 @@ class Config(grace.config.Config):
         if 'change_log' not in self._dizmo_config:
             raise MissingKeyError('Add a change_log in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['change_log'], str):
+            if not isstring(self._dizmo_config['change_log']):
                 raise WrongFormatError('The change_log needs to be string.')
             else:
                 if len(self._dizmo_config['change_log']) == 0:
@@ -341,7 +345,7 @@ class Config(grace.config.Config):
         if 'api_version' not in self._dizmo_config:
             raise MissingKeyError('Specify an api version in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['api_version'], str):
+            if not isstring(self._dizmo_config['api_version']):
                 raise WrongFormatError('The api_version key needs to be a string.')
             else:
                 if len(self._dizmo_config['api_version']) == 0:
@@ -350,7 +354,7 @@ class Config(grace.config.Config):
         if 'main_html' not in self._dizmo_config:
             raise MissingKeyError('Specify a main html in your config file under `dizmo_settings`.')
         else:
-            if not isinstance(self._dizmo_config['main_html'], str):
+            if not isstring(self._dizmo_config['main_html']):
                 raise WrongFormatError('The main_html key needs to be a string.')
             else:
                 if len(self._dizmo_config['main_html']) == 0:
@@ -427,7 +431,7 @@ class New(grace.create.New):
         self._cwd = os.getcwd()
 
         self._skeleton_parent_folder = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'custom')
-        self._skeleton_path = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'custom', hashlib.md5(skeleton).hexdigest())
+        self._skeleton_path = os.path.join(os.path.expanduser('~'), '.grace', 'skeletons', 'custom', hashlib.md5(skeleton.encode(sys.getfilesystemencoding())).hexdigest())
         self._skeleton_url = skeleton
 
         if skeleton == 'basic':
@@ -497,31 +501,31 @@ class Build(grace.build.Build):
             try:
                 copy(image_PNG_source, os.path.join(build_path, 'Icon.png'))
             except:
-                print 'Could not copy your Icon.png file.'
+                print('Could not copy your Icon.png file.')
 
         if os.path.isfile(image_PNG_dark_source):
             try:
                 copy(image_PNG_dark_source, os.path.join(build_path, 'Icon-dark.png'))
             except:
-                print 'Could not copy your Icon-dark.png file.'
+                print('Could not copy your Icon-dark.png file.')
 
         if os.path.isfile(image_SVG_source):
             try:
                 copy(image_SVG_source, os.path.join(build_path, 'Icon.svg'))
             except:
-                print 'Could not copy your Icon.svg file.'
+                print('Could not copy your Icon.svg file.')
 
         if os.path.isfile(image_SVG_dark_source):
             try:
                 copy(image_SVG_dark_source, os.path.join(build_path, 'Icon-dark.svg'))
             except:
-                print 'Could not copy your Icon-dark.svg file.'
+                print('Could not copy your Icon-dark.svg file.')
 
         if os.path.isfile(image_preview_source):
             try:
                 copy(image_preview_source, os.path.join(build_path, 'Preview.png'))
             except:
-                print 'Could not copy your Preview.png file.'
+                print('Could not copy your Preview.png file.')
 
     def _build_help(self, help_path):
         valid = False
@@ -584,7 +588,7 @@ class Test(grace.testit.Test):
                 if not os.path.exists(icon_path):
                     icon_path = os.path.join(os.getcwd(), icon_name)
                     if not os.path.exists(icon_path):
-                        print 'Could not find an Icon for your test dizmo. It is strongly recommended to add "Icon.svg" in the assets folder.'
+                        print('Could not find an Icon for your test dizmo. It is strongly recommended to add "Icon.svg" in the assets folder.')
 
         try:
             copy(icon_path, os.path.join(path, icon_name))
@@ -617,7 +621,7 @@ class Deploy(grace.deploy.Deploy):
             except:
                 raise RemoveFolderError('Could not remove the deploy folder.')
         else:
-            print 'The dizmo will be deployed, but you need to drag & drop the folder "' + self._config['name'] + '" from the build directory into dizmospace once to allow association with it. Otherwise your dizmo will not show up as installed.'
+            print('The dizmo will be deployed, but you need to drag & drop the folder "' + self._config['name'] + '" from the build directory into dizmospace once to allow association with it. Otherwise your dizmo will not show up as installed.')
 
         try:
             move(source, dest)
@@ -659,7 +663,7 @@ class Upload(grace.upload.Upload):
 
     def _get_login_information(self):
         if self._username is None:
-            self._username = raw_input('Please provide the username for your upload server (or leave blank if none is required): ')
+            self._username = input('Please provide the username for your upload server (or leave blank if none is required): ')
 
         if self._password is None:
             self._password = getpass.getpass('Please provide the password for your upload server (or leave blank if none is required): ')
@@ -792,9 +796,9 @@ class Task(grace.task.Task):
 
         if 'credentials' in self._config:
             if 'username' in self._config['credentials']:
-                self._username = self._config['credentials']['username'].encode()
+                self._username = self._config['credentials']['username']
             if 'password' in self._config['credentials']:
-                self._password = self._config['credentials']['password'].encode()
+                self._password = self._config['credentials']['password']
 
     def _execute_subproject(self, project):
         if 'bundle_identifier' not in project:
@@ -812,7 +816,7 @@ class Task(grace.task.Task):
 
     def _login(self):
         if self._username is None:
-            self._username = raw_input('Please provide the username for your upload server (or leave blank if none is required): ')
+            self._username = input('Please provide the username for your upload server (or leave blank if none is required): ')
 
         if self._password is None:
             self._password = getpass.getpass('Please provide the password for your upload server (or leave blank if none is required): ')
