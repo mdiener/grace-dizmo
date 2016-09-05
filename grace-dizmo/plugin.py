@@ -6,8 +6,7 @@ import os
 import plistlib
 from shutil import move, rmtree, copy
 import sys
-from pkg_resources import resource_filename
-from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials, RemoteServerError, KeyNotAllowedError, FileNotFoundError, FolderNotFoundError
+from grace.error import MissingKeyError, WrongFormatError, FileNotWritableError, RemoveFolderError, UnknownCommandError, WrongLoginCredentials, RemoteServerError, KeyNotAllowedError, FileNotFoundError
 import grace.create
 import grace.build
 import grace.testit
@@ -19,7 +18,6 @@ from grace.utils import update, load_json, write_json, isstring
 import requests
 import getpass
 from copy import deepcopy
-import collections
 import hashlib
 import zipfile
 import re
@@ -28,13 +26,29 @@ import re
 requests.packages.urllib3.disable_warnings()
 
 
+def _escapeAndEncode(text):
+    m = plistlib._controlCharPat.search(text)
+    if m is not None:
+        raise ValueError("strings can't contains control characters; "
+                         "use plistlib.Data instead")
+    text = text.replace("\r\n", "\n")       # convert DOS line endings
+    text = text.replace("\r", "\n")         # convert Mac line endings
+    text = text.replace("&", "&amp;")       # escape '&'
+    text = text.replace("<", "&lt;")        # escape '<'
+    text = text.replace(">", "&gt;")        # escape '>'
+
+    return text
+    # return text.encode("utf-8")             # encode as UTF-8
+
+plistlib._escapeAndEncode = _escapeAndEncode
+
+
 def we_are_frozen():
     # All of the modules are built-in to the interpreter, e.g., by py2exe
     return hasattr(sys, "frozen")
 
 
 def get_path():
-    encoding = sys.getfilesystemencoding()
     if we_are_frozen():
         return os.path.dirname(sys.executable)
     return os.path.dirname(__file__)
@@ -176,19 +190,19 @@ class Config(grace.config.Config):
             dizmo_settings = updates['dizmo_settings']
 
             if ('bundle_name' in dizmo_settings or
-                'bundle_identifier' in dizmo_settings or
-                'box_inset_x' in dizmo_settings or
-                'box_inset_y' in dizmo_settings or
-                'description' in dizmo_settings or
-                'tags' in dizmo_settings or
-                'category' in dizmo_settings or
-                'min_space_version' in dizmo_settings or
-                'change_log' in dizmo_settings or
-                'api_version' in dizmo_settings or
-                'main_html' in dizmo_settings or
-                'hidden_dizmo' in dizmo_settings or
-                'force_update' in dizmo_settings or
-                'elements_version' in dizmo_settings):
+                    'bundle_identifier' in dizmo_settings or
+                    'box_inset_x' in dizmo_settings or
+                    'box_inset_y' in dizmo_settings or
+                    'description' in dizmo_settings or
+                    'tags' in dizmo_settings or
+                    'category' in dizmo_settings or
+                    'min_space_version' in dizmo_settings or
+                    'change_log' in dizmo_settings or
+                    'api_version' in dizmo_settings or
+                    'main_html' in dizmo_settings or
+                    'hidden_dizmo' in dizmo_settings or
+                    'force_update' in dizmo_settings or
+                    'elements_version' in dizmo_settings):
 
                 raise KeyNotAllowedError('Only "width", "height", "allow_resize" and "title_editable" are allowed under "dizmo_settings".')
 
@@ -206,12 +220,9 @@ class Config(grace.config.Config):
                 raise MissingKeyError('The bundle_identifier of the embedded project has not been set.')
 
     def _preparse_config(self, config):
-        url = ''
-
         if 'dizmo_settings' in config:
             if 'urls' in config['dizmo_settings']:
                 if 'dizmo_store' in config['dizmo_settings']['urls']:
-                    url = config['dizmo_settings']['urls']['dizmo_store']
                     if 'urls' in config:
                         config['urls']['dizmo_store'] = config['dizmo_settings']['urls']['dizmo_store']
                     else:
@@ -476,7 +487,8 @@ class Build(grace.build.Build):
         try:
             plistlib.writePlist(plist, os.path.join(path, 'Info.plist'))
         except:
-            raise FileNotWritableError('Could not write plist to target location: ', path)
+            raise
+            # raise FileNotWritableError('Could not write plist to target location: ', path)
 
     def _copy_images(self, build_path):
         assets_path = os.path.join(build_path, 'assets')
@@ -683,8 +695,7 @@ class Upload(grace.upload.Upload):
 
         r = requests.get(self._publish_latest_url,
             cookies=self._cookies,
-            verify=self._verify_ssl
-        )
+            verify=self._verify_ssl)
 
         self._dizmo_exist_check_response(r)
 
@@ -850,7 +861,7 @@ class Task(grace.task.Task):
                 return
             elif self._subtask == '':
                 self._publish_dizmo(self._config['version'])
-                return;
+                return
             else:
                 self._publish_dizmo(self._subtask)
         if self._task == 'unpublish':
@@ -881,8 +892,7 @@ class Task(grace.task.Task):
     def _access_publish_information(self):
         r = requests.get(self._publish_url,
             cookies=self._cookies,
-            verify=self._verify_ssl
-        )
+            verify=self._verify_ssl)
 
         self._display_response(r)
 

@@ -2,16 +2,21 @@ from glob import glob
 import os
 from setuptools import setup
 
-package_data = {'grace-dizmo': []}
 
-previous = ''
-for root, dirs, files in os.walk(os.path.join('grace-dizmo', 'skeleton')):
-    for filename in files:
-        if previous != root:
-            filelist = glob(root + '/*.*')
-            for f in filelist:
-                package_data['grace-dizmo'].append(f[12:])
-            previous = root
+def gather_files(folder):
+    previous = ''
+    data = []
+
+    for root, dirs, files in os.walk(os.path.join('grace-dizmo', folder)):
+        for filename in files:
+            if previous != root:
+                filelist = glob(root + '/*.*')
+                for f in filelist:
+                    data.append(f[12:])
+                    previous = root
+
+    return data
+
 
 setup(
     name='grace_dizmo',
@@ -23,7 +28,9 @@ setup(
     license='LICENSE.txt',
     packages=['grace-dizmo'],
     install_requires=['grace>=0.5.2', 'setuptools', 'requests'],
-    package_data=package_data,
+    package_data={
+        'grace-dizmo': gather_files('py27')
+    },
     keywords='toolchain javascript dizmo js buildtool',
     long_description=open('README.txt').read(),
     classifiers=[
