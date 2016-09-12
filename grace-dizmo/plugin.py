@@ -38,9 +38,22 @@ def _escapeAndEncode(text):
     text = text.replace(">", "&gt;")        # escape '>'
 
     return text
-    # return text.encode("utf-8")             # encode as UTF-8
 
-plistlib._escapeAndEncode = _escapeAndEncode
+
+def writeDict(self, d):
+    self.beginElement("dict")
+    items = d.items()
+    for key, value in items:
+        if not isstring(key):
+            raise TypeError("keys must be strings")
+        self.simpleElement("key", key)
+        self.writeValue(value)
+    self.endElement("dict")
+
+
+if sys.version_info.major < 3:
+    plistlib._escapeAndEncode = _escapeAndEncode
+    plistlib.PlistWriter.writeDict = writeDict
 
 
 def we_are_frozen():
