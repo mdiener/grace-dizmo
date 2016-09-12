@@ -24,10 +24,10 @@ setup(
     author='Michael Diener',
     author_email='michael@webdiener.ch',
     url='https://github.com/mdiener/grace-dizmo',
-    version='0.4.4',
+    version='0.4.5',
     license='LICENSE.txt',
     packages=['grace-dizmo'],
-    install_requires=['grace>=0.5.5', 'setuptools', 'requests'],
+    install_requires=['grace>=0.5.6', 'setuptools', 'requests'],
     package_data={
         'grace-dizmo': gather_files('py27')
     },
