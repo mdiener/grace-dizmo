@@ -24,7 +24,7 @@ setup(
     author='Michael Diener',
     author_email='michael@webdiener.ch',
     url='https://github.com/mdiener/grace-dizmo',
-    version='0.4.5',
+    version='0.4.6',
     license='LICENSE.txt',
     packages=['grace-dizmo'],
     install_requires=['grace>=0.5.6', 'setuptools', 'requests'],
