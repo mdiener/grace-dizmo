@@ -132,7 +132,7 @@ def get_plist(config, testname=None, test=False):
 
 
 def get_skeleton_names():
-    return ['basic', 'joose', 'coffee', 'transcrypt']
+    return ['basic', 'joose', 'coffee']
 
 
 class CommandLineParser(grace.cmdparse.CommandLineParser):
